@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:house_management_app/login_page.dart';
 import 'package:house_management_app/screen_login/welcome_screen.dart';
 import 'package:house_management_app/views/home_page.dart';
 
