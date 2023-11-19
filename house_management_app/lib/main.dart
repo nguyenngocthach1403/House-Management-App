@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:house_management_app/screen_login/welcome_screen.dart';
 import 'package:house_management_app/views/home_page.dart';
+import 'package:house_management_app/light_object/light_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomeScreen(),
+      home: const LightScreen(),
     );
   }
 }
