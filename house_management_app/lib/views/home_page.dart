@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:house_management_app/custom_scaffold/weather.dart';
+import 'package:house_management_app/views/feature.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,6 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<Feature> featureLst = List.filled(5, Feature(icon: Icons.abc));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,8 +84,53 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(50),
-                        topRight: Radius.circular(50))),
+                        topLeft: Radius.circular(40),
+                        topRight: Radius.circular(40))),
+                child: Column(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: const Padding(
+                        padding: EdgeInsets.fromLTRB(15, 20, 0, 5),
+                        child: Text(
+                          "Feature",
+                          style: TextStyle(fontSize: 25),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                        padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                        // child: Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        //   children: [
+
+                        //     // Feature(
+                        //     //   icon: Icons.wifi,
+                        //     // ),
+                        //     // Feature(
+                        //     //   icon: Icons.alarm,
+                        //     // ),
+                        //     // Feature(icon: Icons.account_circle_outlined),
+                        //     // Feature(icon: Icons.wifi_tethering),
+                        //   ],
+                        // ),
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                          color: Colors.transparent,
+                          width: MediaQuery.of(context).size.width,
+                          height: 100,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              Row(
+                                children: List.generate(featureLst.length,
+                                    (index) => featureLst[index]),
+                              )
+                            ],
+                          ),
+                        ))
+                  ],
+                ),
               ))
             ],
           ),
