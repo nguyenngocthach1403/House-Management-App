@@ -12,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Feature> featureLst = List.filled(5, Feature(icon: Icons.abc));
+  List<Feature> featureLst = List.filled(5, const Feature(icon: Icons.wifi));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 10,
               ),
               Weather(
-                weatherIcon: AssetImage("images/icon/cloudy.png"),
+                weatherIcon: const AssetImage("images/icon/cloudy.png"),
                 weather: "Good",
                 currentTime: "20:20",
                 currentyDate: "21/11/2023",
