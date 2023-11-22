@@ -75,8 +75,6 @@ class _HomeScreenState extends State<HomeScreen> {
               Weather(
                 weatherIcon: const AssetImage("images/icon/cloudy.png"),
                 weather: "Good",
-                currentTime: "20:20",
-                currentyDate: "21/11/2023",
                 temperature: 20,
               ),
               Expanded(

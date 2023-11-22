@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class Weather extends StatefulWidget {
@@ -5,14 +7,10 @@ class Weather extends StatefulWidget {
       {super.key,
       required this.weatherIcon,
       required this.weather,
-      required this.temperature,
-      required this.currentTime,
-      required this.currentyDate});
+      required this.temperature});
   AssetImage weatherIcon;
   String weather;
   double temperature;
-  String currentTime;
-  String currentyDate;
 
   @override
   State<Weather> createState() => _WeatherState();
@@ -25,10 +23,19 @@ double toFahrenheit(double celsius) {
 class _WeatherState extends State<Weather> {
   bool iscelsius = true;
   double? temperatureTemp;
+  DateTime _currentTime = DateTime.now();
+
   @override
   void initState() {
     super.initState();
     temperatureTemp = widget.temperature;
+    Timer.periodic(const Duration(minutes: 1), _updateTimer);
+  }
+
+  void _updateTimer(Timer timer) {
+    setState(() {
+      _currentTime = DateTime.now();
+    });
   }
 
   @override
@@ -36,8 +43,6 @@ class _WeatherState extends State<Weather> {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       height: 100,
-      // margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-      // color: Colors.amber,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -138,7 +143,7 @@ class _WeatherState extends State<Weather> {
                   child: Padding(
                       padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                       child: Text(
-                        widget.currentTime,
+                        "${_currentTime.hour}:${_currentTime.minute < 10 ? "+ ${_currentTime.minute}" : _currentTime.minute}",
                         style:
                             const TextStyle(fontSize: 30, color: Colors.white),
                       )),
@@ -149,7 +154,7 @@ class _WeatherState extends State<Weather> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: Text(
-                    widget.currentyDate,
+                    "${_currentTime.day}/${_currentTime.month}/${_currentTime.year}",
                     style: const TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 )
