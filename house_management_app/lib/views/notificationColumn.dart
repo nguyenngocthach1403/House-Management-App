@@ -9,8 +9,8 @@ class NotificationColumn extends StatelessWidget {
       5,
       NotificationItem(
           iconData: Icons.notifications,
-          message: "Thông báo",
-          title: "",
+          message: "Bedroom",
+          title: "hôm nay",
           time: TimeOfDay.now()));
   @override
   Widget build(BuildContext context) {

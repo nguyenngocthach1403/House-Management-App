@@ -22,20 +22,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
           title: Text("Notifications"),
           centerTitle: true,
         ),
-        body:
-           
-            ListView(
+        body: ListView(
           children: [
             Text("New"),
             NotificationItem(
                 iconData: Icons.notifications,
-                message: "thông báo",
-                title: "title",
+                message: "nhiệt độ hiện tại 35 độ",
+                title: "Bedroom",
                 time: TimeOfDay.now()),
-                Text("Before"),
-                NotificationColumn()
+            Text("Before"),
+            NotificationColumn()
           ],
-        )
-        );
+        ));
   }
 }
