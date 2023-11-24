@@ -110,11 +110,38 @@ class _LightScreenState extends State<LightScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("LIGHT MENU"),
-        centerTitle: true,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+              child: CircleAvatar(backgroundImage: AssetImage("images/h1.png")),
+            ),
+            TweenAnimationBuilder(
+              tween: Tween<double>(begin: 0, end: 1),
+              duration: const Duration(seconds: 1),
+              builder: ((context, value, child) {
+                return Opacity(
+                  opacity: value,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 20 - value * 20),
+                    child: child,
+                  ),
+                );
+              }),
+              child: const Text(
+                "Light Menu",
+                style: TextStyle(fontSize: 25),
+              ),
+            ),
+            const SizedBox(width: 56),
+          ],
+        ),
+        backgroundColor: const Color.fromRGBO(58, 126, 111, 1),
+        elevation: 0,
       ),
       body: ListView.builder(
-        itemCount: 5,
+        itemCount: 4,
         itemBuilder: (context, index) {
           switch (index) {
             case 0:
@@ -167,22 +194,6 @@ class _LightScreenState extends State<LightScreen> {
               );
             case 3:
               return AlarmControlWidget();
-            // case 4:
-            //   return BedRoomControlWidget(
-            //     brightnessValue: bedRoomBrightnessValue,
-            //     onBrightnessChanged: (value) {
-            //       setState(() {
-            //         bedRoomBrightnessValue = value;
-            //         _saveBrightnessValue(value, 'bedRoom');
-            //       });
-            //     },
-            //     temperatureValue: bedRoomTemperatureValue,
-            //     humidityValue: bedRoomHumidityValue,
-            //     onSwitchChanged: () {
-            //       onSwitchChanged(!bedRoomSwitchValue, false, false, true);
-            //     },
-            //     switchValue: bedRoomSwitchValue,
-            //   );
 
             default:
               return Container();

@@ -1,13 +1,75 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AlarmControlWidget extends StatefulWidget {
-  const AlarmControlWidget({super.key});
+  const AlarmControlWidget({Key? key}) : super(key: key);
 
   @override
-  State<AlarmControlWidget> createState() => _AlarmControlWidgetState();
+  _AlarmControlWidgetState createState() => _AlarmControlWidgetState();
 }
 
 class _AlarmControlWidgetState extends State<AlarmControlWidget> {
+  String selectedValue = '100mls';
+  int selectedTime = 5;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSelectedTime();
+    _loadSelectedValue();
+  }
+
+  void _loadSelectedTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      selectedTime = prefs.getInt('selectedTime') ?? 5;
+    });
+  }
+
+  void _saveSelectedTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('selectedTime', selectedTime);
+  }
+
+  void _loadSelectedValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      selectedValue = prefs.getString('selectedValue') ?? '100mls';
+    });
+  }
+
+  void _saveSelectedValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('selectedValue', selectedValue);
+  }
+
+  void incrementTime() {
+    setState(() {
+      if (selectedTime < 30) {
+        selectedTime += 1;
+        _saveSelectedTime();
+      }
+    });
+  }
+
+  void decrementTime() {
+    setState(() {
+      if (selectedTime > 5) {
+        selectedTime -= 1;
+        _saveSelectedTime();
+      }
+    });
+  }
+
+  void onValueChange(String? value) {
+    if (value != null) {
+      setState(() {
+        selectedValue = value;
+        _saveSelectedValue();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -57,6 +119,103 @@ class _AlarmControlWidgetState extends State<AlarmControlWidget> {
                     ),
                   ],
                 ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: 25),
+                      child: Icon(
+                        Icons.speed_outlined,
+                        color: Colors.black,
+                        size: 40.0,
+                      ),
+                    ),
+                    const SizedBox(width: 9),
+                    Title(
+                      color: Colors.black,
+                      child: const Text(
+                        "Flashing speed:",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 90),
+                    DropdownButton<String>(
+                      value: selectedValue,
+                      items: List.generate(5, (index) {
+                        int value = (index + 1) * 100;
+                        return DropdownMenuItem<String>(
+                          value: '$value' + 'mls',
+                          child: Text(
+                            '$value' + ' mls',
+                            style: const TextStyle(
+                              fontSize: 17.0,
+                              color: Colors.black,
+                            ),
+                          ),
+                        );
+                      }),
+                      onChanged: onValueChange,
+                      style: const TextStyle(
+                        fontSize: 17.0,
+                        color: Colors.black,
+                      ),
+                      iconSize: 20.0,
+                      icon: const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black,
+                      ),
+                      underline: Container(
+                        height: 2,
+                        color: Colors
+                            .black, // Màu của đường gạch dưới DropdownButton
+                      ),
+                      iconDisabledColor: Colors.grey,
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(left: 25),
+                      child: Icon(
+                        Icons.access_alarms_outlined,
+                        color: Colors.black,
+                        size: 40.0,
+                      ),
+                    ),
+                    const SizedBox(width: 9),
+                    Title(
+                      color: Colors.black,
+                      child: const Text(
+                        "Time:",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      icon: Icon(Icons.remove),
+                      onPressed: decrementTime,
+                      color: Colors.blue,
+                    ),
+                    Text(
+                      '$selectedTime s',
+                      style: TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: incrementTime,
+                      color: Colors.red,
+                    ),
+                  ],
+                )
               ],
             ),
           ),
