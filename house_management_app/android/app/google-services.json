@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "159984612460",
+    "project_id": "house-management-app-ffb17",
+    "storage_bucket": "house-management-app-ffb17.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:159984612460:android:c1d29f3d5c03b62a331449",
+        "android_client_info": {
+          "package_name": "com.example.house_management_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3O1G16zAP9PKIZqNnig76aQkHSUjnrIo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

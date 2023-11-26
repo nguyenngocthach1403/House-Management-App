@@ -1,7 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:house_management_app/views/home_page.dart';
 import 'signin_screen.dart';
 import 'package:house_management_app/custom_scaffold/custom_scaffold.dart';
 import 'package:house_management_app/custom_scaffold/theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -11,6 +15,9 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  TextEditingController _email = TextEditingController();
+  TextEditingController _password = TextEditingController();
+  TextEditingController _fullname = TextEditingController();
   final _formSignupKey = GlobalKey<FormState>();
   bool agreePersonalData = true;
   @override
@@ -42,7 +49,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // get started text
                       Text(
                         'Get Started',
                         style: TextStyle(
@@ -54,8 +60,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 40.0,
                       ),
-                      // full name
                       TextFormField(
+                        controller: _fullname,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter Full name';
@@ -85,8 +91,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 25.0,
                       ),
-                      // email
                       TextFormField(
+                        controller: _email,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter Email';
@@ -118,6 +124,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       // password
                       TextFormField(
+                        controller: _password,
                         obscureText: true,
                         obscuringCharacter: '*',
                         validator: (value) {
@@ -186,11 +193,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           onPressed: () {
                             if (_formSignupKey.currentState!.validate() &&
                                 agreePersonalData) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Processing Data'),
-                                ),
-                              );
+                              final newUser = FirebaseAuth.instance
+                                  .createUserWithEmailAndPassword(
+                                      email: _email.text,
+                                      password: _password.text);
+                              if (newUser != null) {
+                                addUser(_fullname.text, _email.text,
+                                    _password.text);
+                                Navigator.pushNamed(context, '/signin');
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Create Account Success'),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Fail'),
+                                  ),
+                                );
+                              }
                             } else if (!agreePersonalData) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -235,19 +257,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ],
                       ),
-                      // const SizedBox(
-                      //   height: 30.0,
-                      // ),
-                      // // sign up social media logo
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      //   children: [
-                      //     Logo(Logos.facebook_f),
-                      //     Logo(Logos.twitter),
-                      //     Logo(Logos.google),
-                      //     Logo(Logos.apple),
-                      //   ],
-                      // ),
                       const SizedBox(
                         height: 25.0,
                       ),
@@ -293,4 +302,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
     );
   }
+}
+
+Future<void> addUser(String _fullname, String _email, String _password) async {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  users
+      .add({
+        'fullname': _fullname,
+        'email': _email,
+        'password': _password,
+      })
+      .then(
+        (value) => print("Success"),
+      )
+      .catchError((error) => print(
+            "Fail $error",
+          ));
 }
