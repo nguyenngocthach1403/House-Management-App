@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:house_management_app/custom_scaffold/weather.dart';
 import 'package:house_management_app/views/feature.dart';
+import 'package:house_management_app/views/room.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,7 +11,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Feature> featureLst = List.filled(5, const Feature(icon: Icons.wifi));
+List<Feature> featureLst = List.filled(5, const Feature(icon: Icons.wifi));
+List<ListRoom> lstroom = List.filled(5, ListRoom(iconLight: Icons.lightbulb, iconC: Icons.thermostat, iconWater: Icons.water_drop, textLight: "ON", textC: "22°C", textWater: "10%"));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         topLeft: Radius.circular(40),
                         topRight: Radius.circular(40))),
                 child: Column(
-                  children: [
+                  children: [ 
                     Container(
                       width: MediaQuery.of(context).size.width,
                       child: const Padding(
@@ -126,12 +126,56 @@ class _HomeScreenState extends State<HomeScreen> {
                               )
                             ],
                           ),
-                        ))
-                  ],
+                        ),),
+                                      
+                 Padding(padding: const EdgeInsets.all(15),
+                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Room", 
+                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 25),
+                    ),
+                    TextButton(
+                      onPressed: (){}, 
+                      child: const Text(
+                        "See all", 
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 15,
+                          ),
+                          )
+                          )
+                ],
                 ),
-              ))
+                ),
+                Padding(padding: const 
+                EdgeInsets.only(top: 1, left: 6, right: 7),
+                child: Column(children: [
+                  Container(
+                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                          color: Colors.transparent,
+                          width: MediaQuery.of(context).size.width,
+                          height: 200,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              Row(
+                                children: List.generate(lstroom.length,
+                                    (index) => lstroom[index]),
+                              )
+                            ],
+                          ),
+                  )
+                ]),
+                ),
+                  ],  
+                ),
+              ),
+              ),
             ],
           ),
-        ));
+        )
+        );
   }
 }
