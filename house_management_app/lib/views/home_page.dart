@@ -11,8 +11,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Feature> featureLst = List.filled(5, const Feature(icon: Icons.abc));
-  List<ListRoom> lstroom = List.filled(5, ListRoom(iconLight: Icons.lightbulb, iconC: Icons.thermostat, iconWater: Icons.water_drop, textLight: "ON", textC: "22°C", textWater: "10%"));
+List<Feature> featureLst = List.filled(5, const Feature(icon: Icons.wifi));
+List<ListRoom> lstroom = List.filled(5, ListRoom(iconLight: Icons.lightbulb, iconC: Icons.thermostat, iconWater: Icons.water_drop, textLight: "ON", textC: "22°C", textWater: "10%"));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,8 +75,6 @@ class _HomeScreenState extends State<HomeScreen> {
               Weather(
                 weatherIcon: const AssetImage("images/icon/cloudy.png"),
                 weather: "Good",
-                currentTime: "20:20",
-                currentyDate: "21/11/2023",
                 temperature: 20,
               ),
               Expanded(
