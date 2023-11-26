@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:house_management_app/views/home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'sigup_screen.dart';
 import 'package:house_management_app/custom_scaffold/custom_scaffold.dart';
 import 'package:house_management_app/custom_scaffold/theme.dart';
@@ -293,7 +294,9 @@ Future<String> login(String _email, String _password) async {
   try {
     final user = await _auth.signInWithEmailAndPassword(
         email: _email, password: _password);
-    print('\n' + user.toString());
+    //luu thong tin user
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('user', user.toString());
     return user.toString();
   } on FirebaseAuthException catch (e) {
     return e.code;
