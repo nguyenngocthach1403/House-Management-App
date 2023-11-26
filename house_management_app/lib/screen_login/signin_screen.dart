@@ -1,7 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:house_management_app/views/home_page.dart';
 import 'sigup_screen.dart';
 import 'package:house_management_app/custom_scaffold/custom_scaffold.dart';
 import 'package:house_management_app/custom_scaffold/theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -11,6 +15,8 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  TextEditingController _email = TextEditingController();
+  TextEditingController _password = TextEditingController();
   final _formSignInKey = GlobalKey<FormState>();
   bool rememberPassword = true;
   @override
@@ -156,12 +162,31 @@ class _SignInScreenState extends State<SignInScreen> {
                           onPressed: () {
                             if (_formSignInKey.currentState!.validate() &&
                                 rememberPassword) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Processing Data'),
-                                ),
-                              );
-                            } else if (!rememberPassword) {
+                              final user = login(_email.text, _password.text);
+                              if (user == 'user-not-found') {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Not found user'),
+                                  ),
+                                );
+                              } else if (user == 'wrong-password') {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('wrong password'),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Login Success!'),
+                                  ),
+                                );
+                                Navigator.pushNamedAndRemoveUntil(
+                                    context, "/homepage", (route) => false);
+                              }
+                            }
+
+                            if (!rememberPassword) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                     content: Text(
@@ -260,5 +285,17 @@ class _SignInScreenState extends State<SignInScreen> {
         ],
       ),
     );
+  }
+}
+
+Future<String> login(String _email, String _password) async {
+  final _auth = FirebaseAuth.instance;
+  try {
+    final user = await _auth.signInWithEmailAndPassword(
+        email: _email, password: _password);
+    print('\n' + user.toString());
+    return user.toString();
+  } on FirebaseAuthException catch (e) {
+    return e.code;
   }
 }
