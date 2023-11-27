@@ -7,6 +7,7 @@ import 'package:house_management_app/views/home_page.dart';
 //import 'package:house_management_app/light_object/light_screen.dart';
 //import 'package:house_management_app/views/notification_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:house_management_app/views/notification_page.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -29,16 +30,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-<<<<<<< HEAD
-      home: NotificationScreen(),
-=======
+
+      home: const NotificationScreen(),
+
       routes: {
         "/": (context) => WelcomeScreen(),
         "/signin": (context) => SignInScreen(),
         "/signup": (context) => SignUpScreen(),
         "/homepage": (context) => HomeScreen()
       },
->>>>>>> 568f270e3bc68659e991f2d9a6141794070bff7d
+
     );
   }
 }
