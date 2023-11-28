@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:house_management_app/custom_scaffold/weather.dart';
+import 'package:house_management_app/models/sharedPreferences.dart';
+import 'package:house_management_app/screen_login/welcome_screen.dart';
 import 'package:house_management_app/views/feature.dart';
 import 'package:house_management_app/views/room.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -63,8 +65,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   IconButton(
                     onPressed: () async {
                       _auth.signOut();
-                      Navigator.pushNamedAndRemoveUntil(
-                          context, "/", (route) => false);
+                      SharedPreferencesInfo.updateData(false);
+                      Navigator.popAndPushNamed(context, '/');
                     },
                     icon: const Icon(Icons.exit_to_app_outlined,
                         color: Colors.white),

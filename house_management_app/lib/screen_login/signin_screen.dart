@@ -7,6 +7,7 @@ import 'package:house_management_app/custom_scaffold/custom_scaffold.dart';
 import 'package:house_management_app/custom_scaffold/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:house_management_app/models/sharedPreferences.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -177,6 +178,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                   ),
                                 );
                               } else {
+                                SharedPreferencesInfo.updateData(true);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text('Login Success!'),
@@ -294,9 +296,6 @@ Future<String> login(String _email, String _password) async {
   try {
     final user = await _auth.signInWithEmailAndPassword(
         email: _email, password: _password);
-    //luu thong tin user
-    final pref = await SharedPreferences.getInstance();
-    await pref.setString('user', user.toString());
     return user.toString();
   } on FirebaseAuthException catch (e) {
     return e.code;

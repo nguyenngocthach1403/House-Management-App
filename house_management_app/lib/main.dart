@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:house_management_app/screen_login/signin_screen.dart';
 import 'package:house_management_app/screen_login/sigup_screen.dart';
@@ -21,20 +23,10 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  Future<String> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    final user = prefs.getString('user') ?? '';
-    return user;
-  }
-
   @override
   Widget build(BuildContext context) {
-    String init_route = "/";
-    Future<String> user = getToken().then((value) => init_route = value);
-    print(init_route);
-
     return MaterialApp(
-      initialRoute: init_route,
+      initialRoute: '/',
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,

@@ -1,11 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:house_management_app/models/sharedPreferences.dart';
 import 'signin_screen.dart';
 import 'sigup_screen.dart';
 import 'package:house_management_app/custom_scaffold/custom_scaffold.dart';
 import 'package:house_management_app/custom_scaffold/welcome_button.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
+
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  bool isLogged = false;
+  loadAccountCurrent() {
+    SharedPreferencesInfo.getToken().then((value) {
+      setState(() {
+        isLogged = value;
+        a();
+      });
+    });
+  }
+
+  void a() {
+    if (isLogged) {
+      Navigator.pushReplacementNamed(context, '/homepage');
+    }
+  }
+
+  @override
+  void initState() {
+    loadAccountCurrent();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
