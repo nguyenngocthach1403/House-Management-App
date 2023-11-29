@@ -1,6 +1,8 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:house_management_app/light_object/light_screen.dart';
+import 'package:house_management_app/light_object/living_control_widget.dart';
 import 'package:house_management_app/screen_login/signin_screen.dart';
 import 'package:house_management_app/screen_login/sigup_screen.dart';
 import 'package:house_management_app/screen_login/welcome_screen.dart';
@@ -37,7 +39,8 @@ class MyApp extends StatelessWidget {
         "/signin": (context) => SignInScreen(),
         "/signup": (context) => SignUpScreen(),
         "/homepage": (context) => HomeScreen(),
-        '/notifications': (context) => NotificationScreen()
+        '/notifications': (context) => NotificationScreen(),
+        '/settingscreen': (context) => LightScreen()
       },
     );
   }

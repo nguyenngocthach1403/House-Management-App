@@ -168,7 +168,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   fontSize: 25),
                             ),
                             TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, '/settingscreen');
+                                },
                                 child: const Text(
                                   "See all",
                                   style: TextStyle(
