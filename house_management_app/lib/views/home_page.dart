@@ -3,6 +3,7 @@ import 'package:house_management_app/custom_scaffold/weather.dart';
 import 'package:house_management_app/models/sharedPreferences.dart';
 import 'package:house_management_app/screen_login/welcome_screen.dart';
 import 'package:house_management_app/views/feature.dart';
+import 'package:house_management_app/views/notification.dart';
 import 'package:house_management_app/views/room.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -163,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               "Room",
                               style: TextStyle(
                                   color: Colors.black,
-                                  fontWeight: FontWeight.bold,
+                                  // fontWeight: FontWeight.bold,
                                   fontSize: 25),
                             ),
                             TextButton(
@@ -199,6 +200,28 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                         ]),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: const [
+                            Text(
+                              "Notification",
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 25),
+                            )
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
+                        child: NotificationItem(
+                            iconData: Icons.notifications,
+                            message:
+                                "Nhiet do ngoai troi ddang o muc kha cao hay dung kem chong nang khi ra ngoai",
+                            title: "Nhiet do ngoai troi hien tai",
+                            time: TimeOfDay.now()),
+                      )
                     ],
                   ),
                 ),
