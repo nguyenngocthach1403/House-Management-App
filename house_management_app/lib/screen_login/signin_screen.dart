@@ -171,8 +171,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            if (_formSignInKey.currentState!.validate() &&
-                                rememberPassword) {
+                            if (_formSignInKey.currentState!.validate()) {
                               final user = login(_email.text, _password.text);
                               if (user == 'user-not-found') {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -187,7 +186,9 @@ class _SignInScreenState extends State<SignInScreen> {
                                   ),
                                 );
                               } else {
-                                SharedPreferencesInfo.updateData(true);
+                                if (rememberPassword) {
+                                  SharedPreferencesInfo.updateData(true);
+                                }
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text('Login Success!'),
