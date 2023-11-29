@@ -16,7 +16,7 @@ class NotificationItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         height: 120,
-        margin: EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             color: Color.fromRGBO(53, 110, 95, 1)),

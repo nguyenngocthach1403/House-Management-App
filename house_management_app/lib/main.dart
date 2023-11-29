@@ -9,6 +9,7 @@ import 'package:house_management_app/views/home_page.dart';
 //import 'package:house_management_app/light_object/light_screen.dart';
 //import 'package:house_management_app/views/notification_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:house_management_app/views/notification_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 
@@ -35,7 +36,8 @@ class MyApp extends StatelessWidget {
         "/": (context) => WelcomeScreen(),
         "/signin": (context) => SignInScreen(),
         "/signup": (context) => SignUpScreen(),
-        "/homepage": (context) => HomeScreen()
+        "/homepage": (context) => HomeScreen(),
+        '/notifications': (context) => NotificationScreen()
       },
     );
   }

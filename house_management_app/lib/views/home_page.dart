@@ -215,12 +215,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
-                        child: NotificationItem(
-                            iconData: Icons.notifications,
-                            message:
-                                "Nhiet do ngoai troi ddang o muc kha cao hay dung kem chong nang khi ra ngoai",
-                            title: "Nhiet do ngoai troi hien tai",
-                            time: TimeOfDay.now()),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/notifications');
+                          },
+                          child: NotificationItem(
+                              iconData: Icons.notifications,
+                              message:
+                                  "Nhiet do ngoai troi ddang o muc kha cao hay dung kem chong nang khi ra ngoai",
+                              title: "Nhiet do ngoai troi hien tai",
+                              time: TimeOfDay.now()),
+                        ),
                       )
                     ],
                   ),
