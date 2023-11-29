@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:house_management_app/screen_login/forgot_password_sreen.dart';
 import 'package:house_management_app/views/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'sigup_screen.dart';
@@ -145,6 +146,14 @@ class _SignInScreenState extends State<SignInScreen> {
                             ],
                           ),
                           GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (e) => const ForgotPassword(),
+                                ),
+                              );
+                            },
                             child: Text(
                               'Forget password?',
                               style: TextStyle(

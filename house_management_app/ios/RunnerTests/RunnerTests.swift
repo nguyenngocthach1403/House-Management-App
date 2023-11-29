@@ -1,7 +1,7 @@
 import Flutter
 import UIKit
 import XCTest
-
+import Firebase
 class RunnerTests: XCTestCase {
 
   func testExample() {
