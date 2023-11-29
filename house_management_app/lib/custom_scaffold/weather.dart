@@ -33,6 +33,8 @@ class _WeatherState extends State<Weather> {
   String weatherIcon = '';
   int temperature = 0;
   String currentWeatherStatus = '';
+  int temperature_f = 0;
+  int temperature_c = 0;
   String searchWeatherAPI =
       "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Ho Chi Minh?key=$API_KEY";
 
@@ -51,6 +53,7 @@ class _WeatherState extends State<Weather> {
       Map<String, dynamic> currentWeather = weatherData['currentConditions'];
 
       weatherIcon = currentWeather['icon'] + '.png';
+      print(currentWeather['icon']);
 
       currentWeatherStatus = currentWeather['conditions'];
 
@@ -58,7 +61,12 @@ class _WeatherState extends State<Weather> {
 
       var temp_c = toCelsius(temp_f);
 
-      temperature = temp_c.toInt();
+      temperature_c = temp_c.toInt();
+
+      temperature_f = temp_f.toInt();
+
+      temperature = temperature_c;
+
       setState(() {
         print(locationData);
       });
@@ -77,11 +85,15 @@ class _WeatherState extends State<Weather> {
   void _updateTimer(Timer timer) {
     setState(() {
       _currentTime = DateTime.now();
+      fetchWeatherData();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (weatherIcon.isEmpty) {
+      weatherIcon = 'clear-day.png';
+    }
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       height: 100,
@@ -96,7 +108,8 @@ class _WeatherState extends State<Weather> {
                   width: 150,
                   height: 45,
                   decoration: BoxDecoration(
-                      image: DecorationImage(image: widget.weatherIcon)),
+                      image: DecorationImage(
+                          image: AssetImage('assets/${weatherIcon}'))),
                 ),
                 const SizedBox(
                   height: 10,
@@ -119,16 +132,16 @@ class _WeatherState extends State<Weather> {
             child: Column(
               children: [
                 GestureDetector(
-                  // onTap: () {
-                  //   setState(() {
-                  //     if (iscelsius) {
-                  //       temperatureTemp = toFahrenheit(widget.temperature);
-                  //     } else {
-                  //       temperatureTemp;
-                  //     }
-                  //     iscelsius = !iscelsius;
-                  //   });
-                  // },
+                  onTap: () {
+                    setState(() {
+                      if (iscelsius) {
+                        temperature = temperature_f;
+                      } else {
+                        temperature = temperature_c;
+                      }
+                      iscelsius = !iscelsius;
+                    });
+                  },
                   child: Container(
                     width: 150,
                     height: 45,
