@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Weather extends StatefulWidget {
   Weather(
@@ -20,15 +23,54 @@ double toFahrenheit(double celsius) {
   return celsius * 1.8 + 32;
 }
 
+double toCelsius(double fahrenheit) {
+  return (fahrenheit - 32) * 5 / 9;
+}
+
 class _WeatherState extends State<Weather> {
+  static final String API_KEY = 'FBKWS65ULGDDQZAN7KKSL2ZMU';
+  // static String location = 'Ho Chi Minh';
+  String weatherIcon = '';
+  int temperature = 0;
+  String currentWeatherStatus = '';
+  String searchWeatherAPI =
+      "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Ho Chi Minh?key=$API_KEY";
+
   bool iscelsius = true;
-  double? temperatureTemp;
   DateTime _currentTime = DateTime.now();
+
+  void fetchWeatherData() async {
+    try {
+      // var client = http.Client();
+
+      var searchResult = await http.get(Uri.parse(searchWeatherAPI));
+      final weatherData =
+          Map<String, dynamic>.from(jsonDecode(searchResult.body) ?? 'No data');
+      var locationData = weatherData['address'];
+
+      Map<String, dynamic> currentWeather = weatherData['currentConditions'];
+
+      weatherIcon = currentWeather['icon'] + '.png';
+
+      currentWeatherStatus = currentWeather['conditions'];
+
+      var temp_f = currentWeather['temp'];
+
+      var temp_c = toCelsius(temp_f);
+
+      temperature = temp_c.toInt();
+      setState(() {
+        print(locationData);
+      });
+    } catch (e) {
+      print("not call");
+    }
+  }
 
   @override
   void initState() {
+    fetchWeatherData();
     super.initState();
-    temperatureTemp = widget.temperature;
     Timer.periodic(const Duration(minutes: 1), _updateTimer);
   }
 
@@ -62,7 +104,7 @@ class _WeatherState extends State<Weather> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: Text(
-                    widget.weather,
+                    currentWeatherStatus,
                     style: const TextStyle(
                       fontSize: 18,
                       color: Colors.white,
@@ -77,16 +119,16 @@ class _WeatherState extends State<Weather> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      if (iscelsius) {
-                        temperatureTemp = toFahrenheit(widget.temperature);
-                      } else {
-                        temperatureTemp = widget.temperature;
-                      }
-                      iscelsius = !iscelsius;
-                    });
-                  },
+                  // onTap: () {
+                  //   setState(() {
+                  //     if (iscelsius) {
+                  //       temperatureTemp = toFahrenheit(widget.temperature);
+                  //     } else {
+                  //       temperatureTemp;
+                  //     }
+                  //     iscelsius = !iscelsius;
+                  //   });
+                  // },
                   child: Container(
                     width: 150,
                     height: 45,
@@ -97,7 +139,7 @@ class _WeatherState extends State<Weather> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              temperatureTemp.toString(),
+                              temperature.toString(),
                               style: const TextStyle(
                                   fontSize: 30, color: Colors.white),
                             ),
@@ -143,7 +185,7 @@ class _WeatherState extends State<Weather> {
                   child: Padding(
                       padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                       child: Text(
-                        "${_currentTime.hour}:${_currentTime.minute < 10 ? "+ ${_currentTime.minute}" : _currentTime.minute}",
+                        "${_currentTime.hour}:${_currentTime.minute < 10 ? "0${_currentTime.minute}" : _currentTime.minute}",
                         style:
                             const TextStyle(fontSize: 30, color: Colors.white),
                       )),
