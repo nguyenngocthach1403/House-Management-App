@@ -12,8 +12,7 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
-  final forgetpasswordController = TextEditingController();
-
+  TextEditingController forgetpasswordController = TextEditingController();
   @override
   void dispose() {
     forgetpasswordController.dispose();

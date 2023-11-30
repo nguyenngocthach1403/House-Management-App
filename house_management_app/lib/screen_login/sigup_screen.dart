@@ -198,8 +198,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       email: _email.text,
                                       password: _password.text);
                               if (newUser != null) {
-                                addUser(_fullname.text, _email.text,
-                                    _password.text);
+                                addUser(_fullname.text.trim(),
+                                    _email.text.trim(), _password.text.trim());
                                 Navigator.pushNamed(context, '/signin');
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
