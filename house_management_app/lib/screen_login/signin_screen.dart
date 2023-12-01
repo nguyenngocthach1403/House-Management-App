@@ -1,7 +1,14 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:house_management_app/screen_login/forgot_password_sreen.dart';
+import 'package:house_management_app/views/home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'sigup_screen.dart';
 import 'package:house_management_app/custom_scaffold/custom_scaffold.dart';
 import 'package:house_management_app/custom_scaffold/theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:house_management_app/models/sharedPreferences.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -11,8 +18,46 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  TextEditingController _email = TextEditingController();
+  TextEditingController _password = TextEditingController();
   final _formSignInKey = GlobalKey<FormState>();
   bool rememberPassword = true;
+
+  Future<void> login() async {
+    final _auth = FirebaseAuth.instance;
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: _email.text.trim(), password: _password.text.trim());
+      print('User signed in: ${userCredential.user!.email}');
+      // ignore: use_build_context_synchronously
+      if (userCredential.user!.emailVerified) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, "/homepage", (route) => false);
+      } else {
+        FirebaseAuth.instance.currentUser!.sendEmailVerification();
+        // ignore: use_build_context_synchronously
+        showDialog(
+            context: context,
+            builder: (context) {
+              return const AlertDialog(
+                content: Text('Please check email before login!!!'),
+              );
+            });
+      }
+    } on FirebaseAuthException catch (e) {
+      print('Error signing in: $e');
+      // ignore: use_build_context_synchronously
+      showDialog(
+          context: context,
+          builder: (context) {
+            return const AlertDialog(
+              content:
+                  Text('Invalid email or password!!! Please check again!!!'),
+            );
+          });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -53,6 +98,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         height: 40.0,
                       ),
                       TextFormField(
+                        controller: _email,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter Email';
@@ -83,6 +129,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         height: 25.0,
                       ),
                       TextFormField(
+                        controller: _password,
                         obscureText: true,
                         obscuringCharacter: '*',
                         validator: (value) {
@@ -137,6 +184,14 @@ class _SignInScreenState extends State<SignInScreen> {
                             ],
                           ),
                           GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (e) => const ForgotPassword(),
+                                ),
+                              );
+                            },
                             child: Text(
                               'Forget password?',
                               style: TextStyle(
@@ -154,20 +209,60 @@ class _SignInScreenState extends State<SignInScreen> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            if (_formSignInKey.currentState!.validate() &&
-                                rememberPassword) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Processing Data'),
-                                ),
-                              );
-                            } else if (!rememberPassword) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text(
-                                        'Please agree to the processing of personal data')),
-                              );
+                            if (_formSignInKey.currentState!.validate()) {
+                              login();
+                              // final user = login(_email.text, _password.text);
+                              // if (user == null) {
+                              //   ScaffoldMessenger.of(context).showSnackBar(
+                              //     const SnackBar(
+                              //         content: Text(
+                              //             'Please check again email and password!!!!!')),
+                              //   );
+                              // } else {
+                              //   ScaffoldMessenger.of(context).showSnackBar(
+                              //     const SnackBar(
+                              //       content: Text('Login Success!'),
+                              //     ),
+                              //   );
+                              //   Navigator.pushNamedAndRemoveUntil(
+                              //       context, "/homepage", (route) => false);
+                              //   if (rememberPassword) {
+                              //     SharedPreferencesInfo.updateData(true);
+                              //   }
+                              // }
+                              // if (user == 'user-not-found') {
+                              //   ScaffoldMessenger.of(context).showSnackBar(
+                              //     const SnackBar(
+                              //       content: Text('Not found user'),
+                              //     ),
+                              //   );
+                              // } else if (user == 'wrong-password') {
+                              //   ScaffoldMessenger.of(context).showSnackBar(
+                              //     const SnackBar(
+                              //       content: Text('wrong password'),
+                              //     ),
+                              //   );
+                              // } else {
+                              if (rememberPassword) {
+                                SharedPreferencesInfo.updateData(true);
+                              }
+                              //   ScaffoldMessenger.of(context).showSnackBar(
+                              //     const SnackBar(
+                              //       content: Text('Login Success!'),
+                              //     ),
+                              //   );
+                              //   Navigator.pushNamedAndRemoveUntil(
+                              //       context, "/homepage", (route) => false);
+                              // }
                             }
+
+                            // if (!rememberPassword) {
+                            //   ScaffoldMessenger.of(context).showSnackBar(
+                            //     const SnackBar(
+                            //         content: Text(
+                            //             'Please agree to the processing of personal data')),
+                            //   );
+                            // }
                           },
                           child: const Text('Sign in'),
                         ),

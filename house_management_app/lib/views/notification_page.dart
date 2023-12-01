@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -22,20 +20,20 @@ class _NotificationScreenState extends State<NotificationScreen> {
           title: Text("Notifications"),
           centerTitle: true,
         ),
-        body:
-           
-            ListView(
-          children: [
-            Text("New"),
-            NotificationItem(
-                iconData: Icons.notifications,
-                message: "thông báo",
-                title: "title",
-                time: TimeOfDay.now()),
-                Text("Before"),
-                NotificationColumn()
-          ],
-        )
-        );
+        body: Padding(
+          padding: EdgeInsets.fromLTRB(10, 5, 10, 0),
+          child: ListView(
+            children: [
+              Text("New"),
+              NotificationItem(
+                  iconData: Icons.notifications,
+                  message: "thông báo",
+                  title: "title",
+                  time: TimeOfDay.now()),
+              Text("Before"),
+              NotificationColumn()
+            ],
+          ),
+        ));
   }
 }
