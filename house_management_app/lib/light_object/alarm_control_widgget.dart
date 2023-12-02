@@ -1,75 +1,28 @@
 import 'package:flutter/material.dart';
+// ignore: unused_import
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AlarmControlWidget extends StatefulWidget {
-  const AlarmControlWidget({Key? key}) : super(key: key);
+  const AlarmControlWidget({
+    Key? key,
+    required this.selectedTime,
+    required this.selectedValue,
+    required this.incrementTime,
+    required this.decrementTime,
+    required this.onValueChange,
+  }) : super(key: key);
+
+  final int selectedTime;
+  final String selectedValue;
+  final VoidCallback incrementTime;
+  final VoidCallback decrementTime;
+  final ValueChanged<String?> onValueChange;
 
   @override
   _AlarmControlWidgetState createState() => _AlarmControlWidgetState();
 }
 
 class _AlarmControlWidgetState extends State<AlarmControlWidget> {
-  String selectedValue = '100mls';
-  int selectedTime = 5;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadSelectedTime();
-    _loadSelectedValue();
-  }
-
-  void _loadSelectedTime() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      selectedTime = prefs.getInt('selectedTime') ?? 5;
-    });
-  }
-
-  void _saveSelectedTime() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setInt('selectedTime', selectedTime);
-  }
-
-  void _loadSelectedValue() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      selectedValue = prefs.getString('selectedValue') ?? '100mls';
-    });
-  }
-
-  void _saveSelectedValue() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('selectedValue', selectedValue);
-  }
-
-  void incrementTime() {
-    setState(() {
-      if (selectedTime < 30) {
-        selectedTime += 1;
-        _saveSelectedTime();
-      }
-    });
-  }
-
-  void decrementTime() {
-    setState(() {
-      if (selectedTime > 5) {
-        selectedTime -= 1;
-        _saveSelectedTime();
-      }
-    });
-  }
-
-  void onValueChange(String? value) {
-    if (value != null) {
-      setState(() {
-        selectedValue = value;
-        _saveSelectedValue();
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -142,7 +95,7 @@ class _AlarmControlWidgetState extends State<AlarmControlWidget> {
                     ),
                     const SizedBox(width: 90),
                     DropdownButton<String>(
-                      value: selectedValue,
+                      value: widget.selectedValue,
                       items: List.generate(5, (index) {
                         int value = (index + 1) * 100;
                         return DropdownMenuItem<String>(
@@ -156,7 +109,7 @@ class _AlarmControlWidgetState extends State<AlarmControlWidget> {
                           ),
                         );
                       }),
-                      onChanged: onValueChange,
+                      onChanged: widget.onValueChange,
                       style: const TextStyle(
                         fontSize: 17.0,
                         color: Colors.black,
@@ -199,11 +152,11 @@ class _AlarmControlWidgetState extends State<AlarmControlWidget> {
                     const Spacer(),
                     IconButton(
                       icon: Icon(Icons.remove),
-                      onPressed: decrementTime,
+                      onPressed: widget.decrementTime,
                       color: Colors.blue,
                     ),
                     Text(
-                      '$selectedTime s',
+                      '${widget.selectedTime} s',
                       style: TextStyle(
                           fontSize: 18.0,
                           color: Colors.black,
@@ -211,7 +164,7 @@ class _AlarmControlWidgetState extends State<AlarmControlWidget> {
                     ),
                     IconButton(
                       icon: Icon(Icons.add),
-                      onPressed: incrementTime,
+                      onPressed: widget.incrementTime,
                       color: Colors.red,
                     ),
                   ],

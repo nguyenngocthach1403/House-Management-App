@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:house_management_app/light_object/alarm_control_widgget.dart';
 import 'package:house_management_app/light_object/living_control_widget.dart';
 import 'package:house_management_app/light_object/kitchen_control_widget.dart';
-
 import 'package:house_management_app/light_object/bedroom_control_widget.dart';
-import 'package:house_management_app/light_object/alarm_control_widgget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:house_management_app/firebase_service.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class LightScreen extends StatefulWidget {
   const LightScreen({Key? key}) : super(key: key);
@@ -31,10 +32,27 @@ class _LightScreenState extends State<LightScreen> {
 
   late SharedPreferences _prefs;
 
+  late FirebaseService _livingRoomFirebaseService;
+  late FirebaseService _kitchenFirebaseService;
+  late FirebaseService _bedRoomFirebaseService;
+
+  // Variables for AlarmControlWidget
+  String selectedValue = '100mls';
+  int selectedTime = 5;
+
+  // DatabaseReference for 'alarmLed'
+  final DatabaseReference _alarmLedReference =
+      FirebaseDatabase.instance.reference().child('alarmLed');
+
   @override
   void initState() {
     super.initState();
     _loadSwitchAndBrightnessValues();
+    _loadSelectedTime();
+    _loadSelectedValue();
+    _livingRoomFirebaseService = FirebaseService('livingRoomLed');
+    _kitchenFirebaseService = FirebaseService('kitchenRoomLed');
+    _bedRoomFirebaseService = FirebaseService('bedRoomLed');
   }
 
   void onSwitchChanged(
@@ -43,14 +61,17 @@ class _LightScreenState extends State<LightScreen> {
       if (isLivingRoom) {
         livingRoomSwitchValue = value;
         _saveSwitchState(value, 'livingRoom');
+        _livingRoomFirebaseService.updateSwitchStatus(value);
       }
       if (isKitchen) {
         kitchenSwitchValue = value;
         _saveSwitchState(value, 'kitchen');
+        _kitchenFirebaseService.updateSwitchStatus(value);
       }
       if (isBedRoom) {
         bedRoomSwitchValue = value;
         _saveSwitchState(value, 'bedRoom');
+        _bedRoomFirebaseService.updateSwitchStatus(value);
       }
     });
   }
@@ -97,6 +118,11 @@ class _LightScreenState extends State<LightScreen> {
     _prefs.setDouble('$roomKey-brightnessValue', value);
   }
 
+  Future<void> _updateBrightness(
+      FirebaseService firebaseService, double brightness) async {
+    await firebaseService.updateBrightness(brightness);
+  }
+
   Future<void> _loadSwitchAndBrightnessValues() async {
     await _loadSwitchState('livingRoom');
     await _loadBrightnessValue('livingRoom');
@@ -104,6 +130,74 @@ class _LightScreenState extends State<LightScreen> {
     await _loadBrightnessValue('kitchen');
     await _loadSwitchState('bedRoom');
     await _loadBrightnessValue('bedRoom');
+  }
+
+  // Phương thức để cập nhật dữ liệu 'time' và 'speed' lên Firebase
+  Future<void> _updateAlarmLedData(int time, int speed) async {
+    await _alarmLedReference.update({
+      'time': time,
+      'speed': speed,
+    });
+  }
+
+  void _loadSelectedTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      selectedTime = prefs.getInt('selectedTime') ?? 5;
+    });
+  }
+
+  void _saveSelectedTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('selectedTime', selectedTime);
+  }
+
+  void _loadSelectedValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      selectedValue = prefs.getString('selectedValue') ?? '100mls';
+    });
+  }
+
+  void _saveSelectedValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('selectedValue', selectedValue);
+  }
+
+  void incrementTime() {
+    setState(() {
+      if (selectedTime < 30) {
+        selectedTime += 1;
+        _saveSelectedTime();
+        // Cập nhật 'time' lên Firebase khi giá trị thay đổi
+        _updateAlarmLedData(
+            selectedTime, int.parse(selectedValue.replaceAll('mls', '')));
+      }
+    });
+  }
+
+  void decrementTime() {
+    setState(() {
+      if (selectedTime > 5) {
+        selectedTime -= 1;
+        _saveSelectedTime();
+        // Cập nhật 'time' lên Firebase khi giá trị thay đổi
+        _updateAlarmLedData(
+            selectedTime, int.parse(selectedValue.replaceAll('mls', '')));
+      }
+    });
+  }
+
+  void onValueChange(String? value) {
+    if (value != null) {
+      setState(() {
+        selectedValue = value;
+        _saveSelectedValue();
+        // Cập nhật 'speed' lên Firebase khi giá trị thay đổi
+        _updateAlarmLedData(
+            selectedTime, int.parse(value.replaceAll('mls', '')));
+      });
+    }
   }
 
   @override
@@ -147,11 +241,13 @@ class _LightScreenState extends State<LightScreen> {
             case 0:
               return LivingControlWidget(
                 brightnessValue: livingRoomBrightnessValue,
-                onBrightnessChanged: (value) {
+                onBrightnessChanged: (value) async {
                   setState(() {
                     livingRoomBrightnessValue = value;
                     _saveBrightnessValue(value, 'livingRoom');
                   });
+                  await _updateBrightness(
+                      _livingRoomFirebaseService, livingRoomBrightnessValue);
                 },
                 temperatureValue: livingRoomTemperatureValue,
                 humidityValue: livingRoomHumidityValue,
@@ -163,11 +259,13 @@ class _LightScreenState extends State<LightScreen> {
             case 1:
               return KitchenControlWidget(
                 brightnessValue: kitchenBrightnessValue,
-                onBrightnessChanged: (value) {
+                onBrightnessChanged: (value) async {
                   setState(() {
                     kitchenBrightnessValue = value;
                     _saveBrightnessValue(value, 'kitchen');
                   });
+                  await _updateBrightness(
+                      _kitchenFirebaseService, kitchenBrightnessValue);
                 },
                 temperatureValue: kitchenTemperatureValue,
                 humidityValue: kitchenHumidityValue,
@@ -179,11 +277,13 @@ class _LightScreenState extends State<LightScreen> {
             case 2:
               return BedRoomControlWidget(
                 brightnessValue: bedRoomBrightnessValue,
-                onBrightnessChanged: (value) {
+                onBrightnessChanged: (value) async {
                   setState(() {
                     bedRoomBrightnessValue = value;
                     _saveBrightnessValue(value, 'bedRoom');
                   });
+                  await _updateBrightness(
+                      _bedRoomFirebaseService, bedRoomBrightnessValue);
                 },
                 temperatureValue: bedRoomTemperatureValue,
                 humidityValue: bedRoomHumidityValue,
@@ -193,7 +293,13 @@ class _LightScreenState extends State<LightScreen> {
                 switchValue: bedRoomSwitchValue,
               );
             case 3:
-              return AlarmControlWidget();
+              return AlarmControlWidget(
+                selectedTime: selectedTime,
+                selectedValue: selectedValue,
+                incrementTime: incrementTime,
+                decrementTime: decrementTime,
+                onValueChange: onValueChange,
+              );
 
             default:
               return Container();
