@@ -36,12 +36,11 @@ class _LightScreenState extends State<LightScreen> {
   late FirebaseService _kitchenFirebaseService;
   late FirebaseService _bedRoomFirebaseService;
 
-  // Variables for AlarmControlWidget
   String selectedValue = '100mls';
   int selectedTime = 5;
 
-  // DatabaseReference for 'alarmLed'
   final DatabaseReference _alarmLedReference =
+      // ignore: deprecated_member_use
       FirebaseDatabase.instance.reference().child('alarmLed');
 
   @override
@@ -50,9 +49,9 @@ class _LightScreenState extends State<LightScreen> {
     _loadSwitchAndBrightnessValues();
     _loadSelectedTime();
     _loadSelectedValue();
-    _livingRoomFirebaseService = FirebaseService('livingRoomLed');
-    _kitchenFirebaseService = FirebaseService('kitchenRoomLed');
-    _bedRoomFirebaseService = FirebaseService('bedRoomLed');
+    _livingRoomFirebaseService = FirebaseService('livingRoom');
+    _kitchenFirebaseService = FirebaseService('kitchenRoom');
+    _bedRoomFirebaseService = FirebaseService('bedRoom');
   }
 
   void onSwitchChanged(
@@ -132,7 +131,6 @@ class _LightScreenState extends State<LightScreen> {
     await _loadBrightnessValue('bedRoom');
   }
 
-  // Phương thức để cập nhật dữ liệu 'time' và 'speed' lên Firebase
   Future<void> _updateAlarmLedData(int time, int speed) async {
     await _alarmLedReference.update({
       'time': time,
@@ -169,7 +167,7 @@ class _LightScreenState extends State<LightScreen> {
       if (selectedTime < 30) {
         selectedTime += 1;
         _saveSelectedTime();
-        // Cập nhật 'time' lên Firebase khi giá trị thay đổi
+
         _updateAlarmLedData(
             selectedTime, int.parse(selectedValue.replaceAll('mls', '')));
       }
@@ -181,7 +179,7 @@ class _LightScreenState extends State<LightScreen> {
       if (selectedTime > 5) {
         selectedTime -= 1;
         _saveSelectedTime();
-        // Cập nhật 'time' lên Firebase khi giá trị thay đổi
+
         _updateAlarmLedData(
             selectedTime, int.parse(selectedValue.replaceAll('mls', '')));
       }
@@ -193,7 +191,7 @@ class _LightScreenState extends State<LightScreen> {
       setState(() {
         selectedValue = value;
         _saveSelectedValue();
-        // Cập nhật 'speed' lên Firebase khi giá trị thay đổi
+
         _updateAlarmLedData(
             selectedTime, int.parse(value.replaceAll('mls', '')));
       });

@@ -10,14 +10,16 @@ class FirebaseService {
 
   Future<void> updateSwitchStatus(bool status) async {
     try {
-      await _databaseReference.child('status').set(status);
+      await _databaseReference
+          .child('light')
+          .update({'status': status ? 'ON' : 'OFF'});
     } catch (error) {
       print('Error updating switch status: $error');
     }
   }
 
   Future<void> updateBrightness(double brightness) async {
-    await _databaseReference.update({'brightness': brightness});
+    await _databaseReference.child('light').update({'brightness': brightness});
   }
 
   Future<void> updateAlarmTime(int time) async {
