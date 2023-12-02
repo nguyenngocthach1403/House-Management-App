@@ -416,10 +416,6 @@ class _LightScreenState extends State<LightScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-              child: CircleAvatar(backgroundImage: AssetImage("images/h1.png")),
-            ),
             TweenAnimationBuilder(
               tween: Tween<double>(begin: 0, end: 1),
               duration: const Duration(seconds: 1),
