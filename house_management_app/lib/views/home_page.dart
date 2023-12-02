@@ -39,6 +39,18 @@ class _HomeScreenState extends State<HomeScreen> {
           textLight: "ON",
           textC: "22°C",
           textWater: "10%"));
+  Color _getIconColor(IconData icon) {
+    if (icon == Icons.lightbulb) {
+      return isAlarmLight
+          ? Colors.yellow
+          : Colors.white; // Màu khi bật hoặc tắt đèn
+    } else if (icon == Icons.lock_open_rounded) {
+      return isOpendoor ? Colors.green : Colors.red; // Màu khi mở hoặc đóng cửa
+    } else {
+      return Colors.white; // Màu mặc định cho các biểu tượng khác
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     DatabaseReference _isOpen = FirebaseDatabase.instance.ref("door/status");
@@ -61,251 +73,281 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     });
     return Scaffold(
-        appBar: AppBar(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                child:
-                    CircleAvatar(backgroundImage: AssetImage("images/h1.png")),
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+              child: CircleAvatar(backgroundImage: AssetImage("images/h1.png")),
+            ),
+            TweenAnimationBuilder(
+              tween: Tween<double>(begin: 0, end: 1),
+              duration: const Duration(seconds: 1),
+              builder: ((context, value, child) {
+                return Opacity(
+                  opacity: value,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 20 - value * 20),
+                    child: child,
+                  ),
+                );
+              }),
+              child: const Text(
+                "Controll Panel",
+                style: TextStyle(fontSize: 25, color: Colors.white),
               ),
-              TweenAnimationBuilder(
-                tween: Tween<double>(begin: 0, end: 1),
-                duration: const Duration(seconds: 1),
-                builder: ((context, value, child) {
-                  return Opacity(
-                    opacity: value,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 20 - value * 20),
-                      child: child,
-                    ),
-                  );
-                }),
-                child: const Text(
-                  "Controll Panel",
-                  style: TextStyle(fontSize: 25, color: Colors.white),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.notifications_active,
+                      color: Colors.white),
+                  iconSize: 30,
                 ),
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.notifications_active,
-                        color: Colors.white),
-                    iconSize: 30,
-                  ),
-                  IconButton(
-                    onPressed: () async {
-                      _auth.signOut();
-                      SharedPreferencesInfo.updateData(false);
-                      Navigator.popAndPushNamed(context, '/');
-                    },
-                    icon: const Icon(Icons.exit_to_app_outlined,
-                        color: Colors.white),
-                    iconSize: 30,
-                  ),
-                ],
-              ),
-            ],
-          ),
-          backgroundColor: const Color.fromRGBO(58, 126, 111, 1),
-          elevation: 0,
+                IconButton(
+                  onPressed: () async {
+                    _auth.signOut();
+                    SharedPreferencesInfo.updateData(false);
+                    Navigator.popAndPushNamed(context, '/');
+                  },
+                  icon: const Icon(Icons.exit_to_app_outlined,
+                      color: Colors.white),
+                  iconSize: 30,
+                ),
+              ],
+            ),
+          ],
         ),
         backgroundColor: const Color.fromRGBO(58, 126, 111, 1),
-        body: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-          child: Column(
-            children: [
-              Row(
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                    child: Text(
-                      "Welcome Toan",
-                      style: TextStyle(fontSize: 22, color: Colors.white),
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Weather(
-                weatherIcon: const AssetImage("images/icon/cloudy.png"),
-                weather: "Good",
-                temperature: 20,
-              ),
-              Expanded(
-                child: Container(
-                  decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(40),
-                          topRight: Radius.circular(40))),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        child: const Padding(
-                          padding: EdgeInsets.fromLTRB(15, 20, 0, 5),
-                          child: Text(
-                            "Feature",
-                            style: TextStyle(fontSize: 25),
-                          ),
+        elevation: 0,
+      ),
+      backgroundColor: const Color.fromRGBO(58, 126, 111, 1),
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+        child: Column(
+          children: [
+            Row(
+              children: const [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                  child: Text(
+                    "Welcome Toan",
+                    style: TextStyle(fontSize: 22, color: Colors.white),
+                  ),
+                )
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Weather(
+              weatherIcon: const AssetImage("images/icon/cloudy.png"),
+              weather: "Good",
+              temperature: 20,
+            ),
+            Expanded(
+              child: Container(
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(40),
+                        topRight: Radius.circular(40))),
+                child: Column(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: const Padding(
+                        padding: EdgeInsets.fromLTRB(15, 20, 0, 5),
+                        child: Text(
+                          "Feature",
+                          style: TextStyle(fontSize: 25),
                         ),
                       ),
-                      Padding(
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                      child: Container(
                         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                        child: Container(
+                        color: Colors.transparent,
+                        width: MediaQuery.of(context).size.width,
+                        height: 100,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            Row(
+                              children: List.generate(
+                                featureLst.length,
+                                (index) => Feature(
+                                  icon: Icon(
+                                    featureLst[index]['icon'],
+                                    // color: (featureLst[index]['icon'] ==
+                                    //                 Icons.lightbulb &&
+                                    //             isAlarmLight) ||
+                                    //         (featureLst[index]['icon'] ==
+                                    //                 Icons.lock_open_rounded &&
+                                    //             isOpendoor)
+                                    //     ? Colors.yellow
+                                    //     : Colors.white,
+                                    color: _getIconColor(
+                                        featureLst[index]['icon']),
+                                    size: 50,
+                                  ),
+                                  action: () {
+                                    setState(() {
+                                      if (featureLst[index]['name'] ==
+                                          'open_door') {
+                                        if (isOpendoor) {
+                                          isOpendoor = !isOpendoor;
+                                          try {
+                                            doorstatus =
+                                                _isOpen.set("CLOSE").toString();
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return const AlertDialog(
+                                                    content:
+                                                        Text('Close the door'),
+                                                  );
+                                                });
+                                          } catch (e) {
+                                            print(e.toString());
+                                          }
+                                        } else {
+                                          isOpendoor = !isOpendoor;
+                                          doorstatus =
+                                              _isOpen.set("OPEN").toString();
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return const AlertDialog(
+                                                  content:
+                                                      Text('Open the door'),
+                                                );
+                                              });
+                                        }
+                                      }
+                                      if (featureLst[index]['name'] ==
+                                          'alarm') {
+                                        if (isAlarmLight) {
+                                          isAlarmLight = !isAlarmLight;
+                                          try {
+                                            alarmLightStatus =
+                                                _isOn.set("OFF").toString();
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return const AlertDialog(
+                                                    content: Text(
+                                                        'Turn Off Alarm Led'),
+                                                  );
+                                                });
+                                          } catch (e) {
+                                            print(e.toString());
+                                          }
+                                        } else {
+                                          isAlarmLight = !isAlarmLight;
+                                          alarmLightStatus =
+                                              _isOn.set("ON").toString();
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return const AlertDialog(
+                                                  content:
+                                                      Text('Turn On Alarm Led'),
+                                                );
+                                              });
+                                        }
+                                      }
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Room",
+                            style: TextStyle(
+                                color: Colors.black,
+                                // fontWeight: FontWeight.bold,
+                                fontSize: 25),
+                          ),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/settingscreen');
+                              },
+                              child: const Text(
+                                "See all",
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 15,
+                                ),
+                              ))
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 1, left: 6, right: 7),
+                      child: Column(children: [
+                        Container(
                           padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                           color: Colors.transparent,
                           width: MediaQuery.of(context).size.width,
-                          height: 100,
+                          height: 200,
                           child: ListView(
                             scrollDirection: Axis.horizontal,
                             children: [
                               Row(
                                 children: List.generate(
-                                  featureLst.length,
-                                  (index) => Feature(
-                                    icon: Icon(
-                                      featureLst[index]['icon'],
-                                      color: (featureLst[index]['icon'] ==
-                                                      Icons.lightbulb &&
-                                                  isAlarmLight) ||
-                                              (featureLst[index]['icon'] ==
-                                                      Icons.lock_open_rounded &&
-                                                  isOpendoor)
-                                          ? Colors.red
-                                          : Colors.white,
-                                      size: 50,
-                                    ),
-                                    action: () {
-                                      setState(() {
-                                        if (featureLst[index]['name'] ==
-                                            'open_door') {
-                                          if (isOpendoor) {
-                                            isOpendoor = !isOpendoor;
-                                            try {
-                                              doorstatus = _isOpen
-                                                  .set("CLOSE")
-                                                  .toString();
-                                            } catch (e) {
-                                              print(e.toString());
-                                            }
-                                          } else {
-                                            isOpendoor = !isOpendoor;
-                                            doorstatus =
-                                                _isOpen.set("OPEN").toString();
-                                          }
-                                        }
-                                        if (featureLst[index]['name'] ==
-                                            'alarm') {
-                                          if (isAlarmLight) {
-                                            isAlarmLight = !isAlarmLight;
-                                            try {
-                                              alarmLightStatus =
-                                                  _isOn.set("OFF").toString();
-                                            } catch (e) {
-                                              print(e.toString());
-                                            }
-                                          } else {
-                                            isAlarmLight = !isAlarmLight;
-                                            alarmLightStatus =
-                                                _isOn.set("ON").toString();
-                                          }
-                                        }
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ),
+                                    lstroom.length, (index) => lstroom[index]),
+                              )
                             ],
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              "Room",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  // fontWeight: FontWeight.bold,
-                                  fontSize: 25),
-                            ),
-                            TextButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(
-                                      context, '/settingscreen');
-                                },
-                                child: const Text(
-                                  "See all",
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontSize: 15,
-                                  ),
-                                ))
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding:
-                            const EdgeInsets.only(top: 1, left: 6, right: 7),
-                        child: Column(children: [
-                          Container(
-                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                            color: Colors.transparent,
-                            width: MediaQuery.of(context).size.width,
-                            height: 200,
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: [
-                                Row(
-                                  children: List.generate(lstroom.length,
-                                      (index) => lstroom[index]),
-                                )
-                              ],
-                            ),
+                        )
+                      ]),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: const [
+                          Text(
+                            "Notification",
+                            style: TextStyle(color: Colors.black, fontSize: 25),
                           )
-                        ]),
+                        ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "Notification",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 25),
-                            )
-                          ],
-                        ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/notifications');
+                        },
+                        child: NotificationItem(
+                            iconData: Icons.notifications,
+                            message:
+                                "Nhiet do ngoai troi ddang o muc kha cao hay dung kem chong nang khi ra ngoai",
+                            title: "Nhiet do ngoai troi hien tai",
+                            time: TimeOfDay.now()),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/notifications');
-                          },
-                          child: NotificationItem(
-                              iconData: Icons.notifications,
-                              message:
-                                  "Nhiet do ngoai troi ddang o muc kha cao hay dung kem chong nang khi ra ngoai",
-                              title: "Nhiet do ngoai troi hien tai",
-                              time: TimeOfDay.now()),
-                        ),
-                      )
-                    ],
-                  ),
+                    )
+                  ],
                 ),
               ),
-            ],
-          ),
-        ));
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
