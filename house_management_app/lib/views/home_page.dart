@@ -23,9 +23,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final _auth = FirebaseAuth.instance;
   bool isOpendoor = false;
   String doorstatus = '';
+  bool isAlarmLight = false;
+  String alarmLightStatus = '';
 
   List<Map<String, dynamic>> featureLst = [
-    {"icon": Icons.lock_open_rounded, 'name': "open_door"}
+    {"icon": Icons.lock_open_rounded, 'name': "open_door"},
+    {"icon": Icons.lightbulb, 'name': "alarm"},
   ];
   List<ListRoom> lstroom = List.filled(
       5,
@@ -43,11 +46,18 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         doorstatus = event.snapshot.value
             .toString(); //Gán dữ liệu được lấy trên firebase vào chuỗi
-        print(event.snapshot.value);
+        // print(event.snapshot.value);
         (doorstatus == 'OPEN')
             ? isOpendoor = true
             : isOpendoor =
                 false; // So sánh dữ liệu được lấy (Nếu là ON thì đèn sáng ,OFF đèn tắt)
+      });
+    });
+    DatabaseReference _isOn = FirebaseDatabase.instance.ref("alarmLed/status");
+    _isOn.onValue.listen((event) {
+      setState(() {
+        alarmLightStatus = event.snapshot.value.toString();
+        (alarmLightStatus == 'ON') ? isAlarmLight = true : isAlarmLight = false;
       });
     });
     return Scaffold(
@@ -156,38 +166,61 @@ class _HomeScreenState extends State<HomeScreen> {
                             scrollDirection: Axis.horizontal,
                             children: [
                               Row(
-                                  children: List.generate(
-                                      featureLst.length,
-                                      (index) => Feature(
-                                          icon: Icon(
-                                            featureLst[index]['icon'],
-                                            color: isOpendoor
-                                                ? Colors.red
-                                                : Colors.white,
-                                            size: 50,
-                                          ),
-                                          action: () {
-                                            setState(() {
-                                              if (featureLst[index]['name'] ==
-                                                  'open_door') {
-                                                if (isOpendoor) {
-                                                  isOpendoor = !isOpendoor;
-                                                  try {
-                                                    doorstatus = _isOpen
-                                                        .set("CLOSE")
-                                                        .toString();
-                                                  } catch (e) {
-                                                    print(e.toString());
-                                                  }
-                                                } else {
-                                                  isOpendoor = !isOpendoor;
-                                                  doorstatus = _isOpen
-                                                      .set("OPEN")
-                                                      .toString();
-                                                }
-                                              }
-                                            });
-                                          }))),
+                                children: List.generate(
+                                  featureLst.length,
+                                  (index) => Feature(
+                                    icon: Icon(
+                                      featureLst[index]['icon'],
+                                      color: (featureLst[index]['icon'] ==
+                                                      Icons.lightbulb &&
+                                                  isAlarmLight) ||
+                                              (featureLst[index]['icon'] ==
+                                                      Icons.lock_open_rounded &&
+                                                  isOpendoor)
+                                          ? Colors.red
+                                          : Colors.white,
+                                      size: 50,
+                                    ),
+                                    action: () {
+                                      setState(() {
+                                        if (featureLst[index]['name'] ==
+                                            'open_door') {
+                                          if (isOpendoor) {
+                                            isOpendoor = !isOpendoor;
+                                            try {
+                                              doorstatus = _isOpen
+                                                  .set("CLOSE")
+                                                  .toString();
+                                            } catch (e) {
+                                              print(e.toString());
+                                            }
+                                          } else {
+                                            isOpendoor = !isOpendoor;
+                                            doorstatus =
+                                                _isOpen.set("OPEN").toString();
+                                          }
+                                        }
+                                        if (featureLst[index]['name'] ==
+                                            'alarm') {
+                                          if (isAlarmLight) {
+                                            isAlarmLight = !isAlarmLight;
+                                            try {
+                                              alarmLightStatus =
+                                                  _isOn.set("OFF").toString();
+                                            } catch (e) {
+                                              print(e.toString());
+                                            }
+                                          } else {
+                                            isAlarmLight = !isAlarmLight;
+                                            alarmLightStatus =
+                                                _isOn.set("ON").toString();
+                                          }
+                                        }
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
