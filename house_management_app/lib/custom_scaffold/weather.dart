@@ -76,6 +76,12 @@ class _WeatherState extends State<Weather> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   void initState() {
     fetchWeatherData();
     super.initState();
@@ -83,10 +89,12 @@ class _WeatherState extends State<Weather> {
   }
 
   void _updateTimer(Timer timer) {
-    setState(() {
-      _currentTime = DateTime.now();
-      fetchWeatherData();
-    });
+    if (mounted) {
+      setState(() {
+        _currentTime = DateTime.now();
+        fetchWeatherData();
+      });
+    }
   }
 
   @override
@@ -133,14 +141,16 @@ class _WeatherState extends State<Weather> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    setState(() {
-                      if (iscelsius) {
-                        temperature = temperature_f;
-                      } else {
-                        temperature = temperature_c;
-                      }
-                      iscelsius = !iscelsius;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        if (iscelsius) {
+                          temperature = temperature_f;
+                        } else {
+                          temperature = temperature_c;
+                        }
+                        iscelsius = !iscelsius;
+                      });
+                    }
                   },
                   child: Container(
                     width: 150,

@@ -148,202 +148,196 @@ class _HomeScreenState extends State<HomeScreen> {
               temperature: 20,
             ),
             Expanded(
-              child: Container(
-                decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(40),
-                        topRight: Radius.circular(40))),
-                child: Column(
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: const Padding(
-                        padding: EdgeInsets.fromLTRB(15, 20, 0, 5),
-                        child: Text(
-                          "Feature",
-                          style: TextStyle(fontSize: 25),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                        color: Colors.transparent,
+              child: SingleChildScrollView(
+                child: Container(
+                  decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(40),
+                          topRight: Radius.circular(40))),
+                  child: Column(
+                    children: [
+                      Container(
                         width: MediaQuery.of(context).size.width,
-                        height: 100,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            Row(
-                              children: List.generate(
-                                featureLst.length,
-                                (index) => Feature(
-                                  icon: Icon(
-                                    featureLst[index]['icon'],
-                                    // color: (featureLst[index]['icon'] ==
-                                    //                 Icons.lightbulb &&
-                                    //             isAlarmLight) ||
-                                    //         (featureLst[index]['icon'] ==
-                                    //                 Icons.lock_open_rounded &&
-                                    //             isOpendoor)
-                                    //     ? Colors.yellow
-                                    //     : Colors.white,
-                                    color: _getIconColor(
-                                        featureLst[index]['icon']),
-                                    size: 50,
-                                  ),
-                                  action: () {
-                                    setState(() {
-                                      if (featureLst[index]['name'] ==
-                                          'open_door') {
-                                        if (isOpendoor) {
-                                          isOpendoor = !isOpendoor;
-                                          try {
-                                            doorstatus =
-                                                _isOpen.set("CLOSE").toString();
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return const AlertDialog(
-                                                    content:
-                                                        Text('Close the door'),
-                                                  );
-                                                });
-                                          } catch (e) {
-                                            print(e.toString());
-                                          }
-                                        } else {
-                                          isOpendoor = !isOpendoor;
-                                          doorstatus =
-                                              _isOpen.set("OPEN").toString();
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return const AlertDialog(
-                                                  content:
-                                                      Text('Open the door'),
-                                                );
-                                              });
-                                        }
-                                      }
-                                      if (featureLst[index]['name'] ==
-                                          'alarm') {
-                                        if (isAlarmLight) {
-                                          isAlarmLight = !isAlarmLight;
-                                          try {
-                                            alarmLightStatus =
-                                                _isOn.set("OFF").toString();
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return const AlertDialog(
-                                                    content: Text(
-                                                        'Turn Off Alarm Led'),
-                                                  );
-                                                });
-                                          } catch (e) {
-                                            print(e.toString());
-                                          }
-                                        } else {
-                                          isAlarmLight = !isAlarmLight;
-                                          alarmLightStatus =
-                                              _isOn.set("ON").toString();
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return const AlertDialog(
-                                                  content:
-                                                      Text('Turn On Alarm Led'),
-                                                );
-                                              });
-                                        }
-                                      }
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
+                        child: const Padding(
+                          padding: EdgeInsets.fromLTRB(15, 15, 0, 5),
+                          child: Text(
+                            "Feature",
+                            style: TextStyle(fontSize: 25),
+                          ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Room",
-                            style: TextStyle(
-                                color: Colors.black,
-                                // fontWeight: FontWeight.bold,
-                                fontSize: 25),
-                          ),
-                          TextButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/settingscreen');
-                              },
-                              child: const Text(
-                                "See all",
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 15,
-                                ),
-                              ))
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 1, left: 6, right: 7),
-                      child: Column(children: [
-                        Container(
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                        child: Container(
                           padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                           color: Colors.transparent,
                           width: MediaQuery.of(context).size.width,
-                          height: 200,
+                          height: 90,
                           child: ListView(
                             scrollDirection: Axis.horizontal,
                             children: [
                               Row(
                                 children: List.generate(
-                                    lstroom.length, (index) => lstroom[index]),
-                              )
+                                  featureLst.length,
+                                  (index) => Feature(
+                                    icon: Icon(
+                                      featureLst[index]['icon'],
+                                      // color: (featureLst[index]['icon'] ==
+                                      //                 Icons.lightbulb &&
+                                      //             isAlarmLight) ||
+                                      //         (featureLst[index]['icon'] ==
+                                      //                 Icons.lock_open_rounded &&
+                                      //             isOpendoor)
+                                      //     ? Colors.yellow
+                                      //     : Colors.white,
+                                      color: _getIconColor(
+                                          featureLst[index]['icon']),
+                                      size: 50,
+                                    ),
+                                    action: () {
+                                      setState(() {
+                                        if (featureLst[index]['name'] ==
+                                            'open_door') {
+                                          if (isOpendoor) {
+                                            isOpendoor = !isOpendoor;
+                                            try {
+                                              doorstatus = _isOpen
+                                                  .set("CLOSE")
+                                                  .toString();
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return const AlertDialog(
+                                                      content: Text(
+                                                          'Close the door'),
+                                                    );
+                                                  });
+                                            } catch (e) {
+                                              print(e.toString());
+                                            }
+                                          } else {
+                                            isOpendoor = !isOpendoor;
+                                            doorstatus =
+                                                _isOpen.set("OPEN").toString();
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return const AlertDialog(
+                                                    content:
+                                                        Text('Open the door'),
+                                                  );
+                                                });
+                                          }
+                                        }
+                                        if (featureLst[index]['name'] ==
+                                            'alarm') {
+                                          if (isAlarmLight) {
+                                            isAlarmLight = !isAlarmLight;
+                                            try {
+                                              alarmLightStatus =
+                                                  _isOn.set("OFF").toString();
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return const AlertDialog(
+                                                      content: Text(
+                                                          'Turn Off Alarm Led'),
+                                                    );
+                                                  });
+                                            } catch (e) {
+                                              print(e.toString());
+                                            }
+                                          } else {
+                                            isAlarmLight = !isAlarmLight;
+                                            alarmLightStatus =
+                                                _isOn.set("ON").toString();
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return const AlertDialog(
+                                                    content: Text(
+                                                        'Turn On Alarm Led'),
+                                                  );
+                                                });
+                                          }
+                                        }
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
-                        )
-                      ]),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: const [
-                          Text(
-                            "Notification",
-                            style: TextStyle(color: Colors.black, fontSize: 25),
-                          )
-                        ],
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, '/notifications');
-                        },
-                        child: NotificationItem(
-                            iconData: Icons.notifications,
-                            message:
-                                "Nhiet do ngoai troi ddang o muc kha cao hay dung kem chong nang khi ra ngoai",
-                            title: "Nhiet do ngoai troi hien tai",
-                            time: TimeOfDay.now()),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 10, 15, 15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Room",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  // fontWeight: FontWeight.bold,
+                                  fontSize: 25),
+                            ),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, '/settingscreen');
+                                },
+                                child: const Text(
+                                  "See all",
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 15,
+                                  ),
+                                ))
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(top: 1, left: 6, right: 7),
+                        child: Column(children: [
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                            color: Colors.transparent,
+                            width: MediaQuery.of(context).size.width,
+                            height: 200,
+                            child: ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: [
+                                Row(
+                                  children: List.generate(lstroom.length,
+                                      (index) => lstroom[index]),
+                                )
+                              ],
+                            ),
+                          )
+                        ]),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: const [
+                            Text(
+                              "Notification",
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 25),
+                            )
+                          ],
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.pushNamed(context, '/notifications');
+                          },
                           child: StreamBuilder(
                             stream: FirebaseFirestore.instance
                                 .collection('notifications')
@@ -376,7 +370,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                   return notificationItem;
                                 } else {
-                                  return CircularProgressIndicator();
+                                  return NotificationItem(
+                                      iconData:
+                                          Icons.not_listed_location_outlined,
+                                      message: "",
+                                      title: "Not Found Notification",
+                                      time: TimeOfDay.now());
                                 }
                               }
 
