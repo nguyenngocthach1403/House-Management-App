@@ -43,6 +43,7 @@ dependencies:
   http: ^0.13.6
   intl: ^0.18.1
   modal_bottom_sheet: ^2.1.2
+  simple_animations: ^5.0.2
 
 dev_dependencies:
   flutter_test:
