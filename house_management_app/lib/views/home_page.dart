@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:house_management_app/custom_scaffold/weather.dart';
 import 'package:house_management_app/models/sharedPreferences.dart';
@@ -6,6 +9,8 @@ import 'package:house_management_app/views/feature.dart';
 import 'package:house_management_app/views/notification.dart';
 import 'package:house_management_app/views/room.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,7 +21,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _auth = FirebaseAuth.instance;
-  List<Feature> featureLst = List.filled(5, const Feature(icon: Icons.wifi));
+  bool isOpendoor = false;
+  String doorstatus = '';
+
+  List<Map<String, dynamic>> featureLst = [
+    {"icon": Icons.lock_open_rounded, 'name': "open_door"}
+  ];
   List<ListRoom> lstroom = List.filled(
       5,
       ListRoom(
@@ -28,6 +38,18 @@ class _HomeScreenState extends State<HomeScreen> {
           textWater: "10%"));
   @override
   Widget build(BuildContext context) {
+    DatabaseReference _isOpen = FirebaseDatabase.instance.ref("door/status");
+    _isOpen.onValue.listen((event) {
+      setState(() {
+        doorstatus = event.snapshot.value
+            .toString(); //Gán dữ liệu được lấy trên firebase vào chuỗi
+        print(event.snapshot.value);
+        (doorstatus == 'OPEN')
+            ? isOpendoor = true
+            : isOpendoor =
+                false; // So sánh dữ liệu được lấy (Nếu là ON thì đèn sáng ,OFF đèn tắt)
+      });
+    });
     return Scaffold(
         appBar: AppBar(
           title: Row(
@@ -125,20 +147,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                        // child: Row(
-                        //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        //   children: [
-
-                        //     // Feature(
-                        //     //   icon: Icons.wifi,
-                        //     // ),
-                        //     // Feature(
-                        //     //   icon: Icons.alarm,
-                        //     // ),
-                        //     // Feature(icon: Icons.account_circle_outlined),
-                        //     // Feature(icon: Icons.wifi_tethering),
-                        //   ],
-                        // ),
                         child: Container(
                           padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                           color: Colors.transparent,
@@ -148,9 +156,38 @@ class _HomeScreenState extends State<HomeScreen> {
                             scrollDirection: Axis.horizontal,
                             children: [
                               Row(
-                                children: List.generate(featureLst.length,
-                                    (index) => featureLst[index]),
-                              )
+                                  children: List.generate(
+                                      featureLst.length,
+                                      (index) => Feature(
+                                          icon: Icon(
+                                            featureLst[index]['icon'],
+                                            color: isOpendoor
+                                                ? Colors.red
+                                                : Colors.white,
+                                            size: 50,
+                                          ),
+                                          action: () {
+                                            setState(() {
+                                              if (featureLst[index]['name'] ==
+                                                  'open_door') {
+                                                if (isOpendoor) {
+                                                  isOpendoor = !isOpendoor;
+                                                  try {
+                                                    doorstatus = _isOpen
+                                                        .set("CLOSE")
+                                                        .toString();
+                                                  } catch (e) {
+                                                    print(e.toString());
+                                                  }
+                                                } else {
+                                                  isOpendoor = !isOpendoor;
+                                                  doorstatus = _isOpen
+                                                      .set("OPEN")
+                                                      .toString();
+                                                }
+                                              }
+                                            });
+                                          }))),
                             ],
                           ),
                         ),
