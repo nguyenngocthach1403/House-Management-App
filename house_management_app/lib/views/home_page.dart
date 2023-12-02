@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 }),
                 child: const Text(
                   "Controll Panel",
-                  style: TextStyle(fontSize: 25),
+                  style: TextStyle(fontSize: 25, color: Colors.white),
                 ),
               ),
               Row(
