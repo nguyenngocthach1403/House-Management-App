@@ -90,7 +90,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 children: [
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/notifications');
+                    },
                     icon: const Icon(Icons.notifications_active,
                         color: Colors.white),
                     iconSize: 30,
@@ -289,17 +291,66 @@ class _HomeScreenState extends State<HomeScreen> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
                         child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/notifications');
-                          },
-                          child: NotificationItem(
-                              iconData: Icons.notifications,
-                              message:
-                                  "Nhiet do ngoai troi ddang o muc kha cao hay dung kem chong nang khi ra ngoai",
-                              title: "Nhiet do ngoai troi hien tai",
-                              time: TimeOfDay.now()),
+                          onTap: () {},
+                          child: StreamBuilder(
+                            stream: FirebaseFirestore.instance
+                                .collection('notifications')
+                                .orderBy('timeline', descending: true)
+                                .limit(1)
+                                .snapshots(),
+                            builder: (context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (snapshot.hasError) {
+                                return Text('Lỗi: ${snapshot.error}');
+                              }
+
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                // Kiểm tra xem có dữ liệu nào trong cache không để tránh hiển thị CircularProgressIndicator liên tục.
+                                if (snapshot.hasData &&
+                                    snapshot.data!.docs.isNotEmpty) {
+                                  var latestNotification =
+                                      snapshot.data!.docs.first;
+                                  var notificationItem = NotificationItem(
+                                    iconData: Icons.notifications,
+                                    message: latestNotification['message'],
+                                    title: latestNotification['title'],
+                                    time: TimeOfDay.fromDateTime(
+                                      (latestNotification['timeline']
+                                              as Timestamp)
+                                          .toDate(),
+                                    ),
+                                  );
+
+                                  return notificationItem;
+                                } else {
+                                  return CircularProgressIndicator();
+                                }
+                              }
+
+                              if (!snapshot.hasData ||
+                                  snapshot.data!.docs.isEmpty) {
+                                return Text(
+                                    'Không có thông báo nào.'); // Hiển thị thông báo khi không có thông báo.
+                              }
+
+                              var latestNotification =
+                                  snapshot.data!.docs.first;
+                              var notificationItem = NotificationItem(
+                                iconData: Icons.notifications,
+                                message: latestNotification['message'],
+                                title: latestNotification['title'],
+                                time: TimeOfDay.fromDateTime(
+                                  (latestNotification['timeline'] as Timestamp)
+                                      .toDate(),
+                                ),
+                              );
+
+                              return notificationItem;
+                            },
+                          ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
