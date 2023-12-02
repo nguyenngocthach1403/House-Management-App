@@ -338,14 +338,70 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () {
                             Navigator.pushNamed(context, '/notifications');
                           },
-                          child: NotificationItem(
-                              iconData: Icons.notifications,
-                              message:
-                                  "Nhiet do ngoai troi ddang o muc kha cao hay dung kem chong nang khi ra ngoai",
-                              title: "Nhiet do ngoai troi hien tai",
-                              time: TimeOfDay.now()),
+                          child: StreamBuilder(
+                            stream: FirebaseFirestore.instance
+                                .collection('notifications')
+                                .orderBy('timeline', descending: true)
+                                .limit(1)
+                                .snapshots(),
+                            builder: (context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (snapshot.hasError) {
+                                return Text('Lỗi: ${snapshot.error}');
+                              }
+
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                // Kiểm tra xem có dữ liệu nào trong cache không để tránh hiển thị CircularProgressIndicator liên tục.
+                                if (snapshot.hasData &&
+                                    snapshot.data!.docs.isNotEmpty) {
+                                  var latestNotification =
+                                      snapshot.data!.docs.first;
+                                  var notificationItem = NotificationItem(
+                                    iconData: Icons.notifications,
+                                    message: latestNotification['message'],
+                                    title: latestNotification['title'],
+                                    time: TimeOfDay.fromDateTime(
+                                      (latestNotification['timeline']
+                                              as Timestamp)
+                                          .toDate(),
+                                    ),
+                                  );
+
+                                  return notificationItem;
+                                } else {
+                                  return NotificationItem(
+                                      iconData:
+                                          Icons.not_listed_location_outlined,
+                                      message: "",
+                                      title: "Not Found Notification",
+                                      time: TimeOfDay.now());
+                                }
+                              }
+
+                              if (!snapshot.hasData ||
+                                  snapshot.data!.docs.isEmpty) {
+                                return Text(
+                                    'Không có thông báo nào.'); // Hiển thị thông báo khi không có thông báo.
+                              }
+
+                              var latestNotification =
+                                  snapshot.data!.docs.first;
+                              var notificationItem = NotificationItem(
+                                iconData: Icons.notifications,
+                                message: latestNotification['message'],
+                                title: latestNotification['title'],
+                                time: TimeOfDay.fromDateTime(
+                                  (latestNotification['timeline'] as Timestamp)
+                                      .toDate(),
+                                ),
+                              );
+
+                              return notificationItem;
+                            },
+                          ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
