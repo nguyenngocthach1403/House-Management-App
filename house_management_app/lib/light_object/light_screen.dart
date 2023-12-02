@@ -19,16 +19,19 @@ class _LightScreenState extends State<LightScreen> {
   double livingRoomTemperatureValue = 31.0;
   double livingRoomHumidityValue = 28.2;
   bool livingRoomSwitchValue = false;
+  String livingRoomLightStatus = 'OFF';
 
-  double kitchenBrightnessValue = 0;
-  double kitchenTemperatureValue = 33.0;
-  double kitchenHumidityValue = 39.0;
-  bool kitchenSwitchValue = false;
+  double kitchenRoomBrightnessValue = 0;
+  double kitchenRoomTemperatureValue = 0;
+  double kitchenRoomHumidityValue = 0;
+  bool kitchenRoomSwitchValue = false;
+  String kitchenRoomLightStatus = 'OFF';
 
   double bedRoomBrightnessValue = 0;
-  double bedRoomTemperatureValue = 25.0;
-  double bedRoomHumidityValue = 40.0;
+  double bedRoomTemperatureValue = 0;
+  double bedRoomHumidityValue = 0;
   bool bedRoomSwitchValue = false;
+  String bedRoomLightStatus = 'OFF';
 
   late SharedPreferences _prefs;
 
@@ -52,6 +55,177 @@ class _LightScreenState extends State<LightScreen> {
     _livingRoomFirebaseService = FirebaseService('livingRoom');
     _kitchenFirebaseService = FirebaseService('kitchenRoom');
     _bedRoomFirebaseService = FirebaseService('bedRoom');
+
+    /* Cập nhật trạng thái của LivingRoom */
+    DatabaseReference livingRoomLightStatusRef =
+        // ignore: deprecated_member_use
+        FirebaseDatabase.instance.reference().child('livingRoom/light/status');
+    livingRoomLightStatusRef.onValue.listen((event) {
+      setState(() {
+        livingRoomLightStatus = event.snapshot.value.toString();
+        livingRoomSwitchValue = (livingRoomLightStatus == 'ON');
+      });
+    });
+    DatabaseReference livingRoomBrightnessRef = FirebaseDatabase.instance
+        // ignore: deprecated_member_use
+        .reference()
+        .child('livingRoom/light/brightness');
+    livingRoomBrightnessRef.onValue.listen((event) {
+      setState(() {
+        var value = event.snapshot.value;
+        if (value is num) {
+          livingRoomBrightnessValue = value.toDouble();
+        } else {
+          livingRoomBrightnessValue = 0.0;
+        }
+      });
+    });
+
+    /* Cập nhật trạng thái của KitchenRoom */
+    DatabaseReference kitchenRoomLightStatusRef =
+        // ignore: deprecated_member_use
+        FirebaseDatabase.instance.reference().child('kitchenRoom/light/status');
+    kitchenRoomLightStatusRef.onValue.listen((event) {
+      setState(() {
+        kitchenRoomLightStatus = event.snapshot.value.toString();
+        kitchenRoomSwitchValue = (kitchenRoomLightStatus == 'ON');
+      });
+    });
+    DatabaseReference kitchenRoomBrightnessRef = FirebaseDatabase.instance
+        // ignore: deprecated_member_use
+        .reference()
+        .child('kitchenRoom/light/brightness');
+    kitchenRoomBrightnessRef.onValue.listen((event) {
+      setState(() {
+        var value = event.snapshot.value;
+        if (value is num) {
+          kitchenRoomBrightnessValue = value.toDouble();
+        } else {
+          kitchenRoomBrightnessValue = 0.0;
+        }
+      });
+    });
+
+    /* Cập nhật trạng thái của BedRoom */
+    DatabaseReference bedRoomLightStatusRef =
+        // ignore: deprecated_member_use
+        FirebaseDatabase.instance.reference().child('bedRoom/light/status');
+    bedRoomLightStatusRef.onValue.listen((event) {
+      setState(() {
+        bedRoomLightStatus = event.snapshot.value.toString();
+        bedRoomSwitchValue = (bedRoomLightStatus == 'ON');
+      });
+    });
+    DatabaseReference bedRoomBrightnessRef =
+        // ignore: deprecated_member_use
+        FirebaseDatabase.instance.reference().child('bedRoom/light/brightness');
+    bedRoomBrightnessRef.onValue.listen((event) {
+      setState(() {
+        var value = event.snapshot.value;
+        if (value is num) {
+          bedRoomBrightnessValue = value.toDouble();
+        } else {
+          bedRoomBrightnessValue = 0.0;
+        }
+      });
+    });
+
+    /* Cập nhật nhiệt độ và độ ẩm của LivingRoom */
+    DatabaseReference livingRoomHumidityRef = FirebaseDatabase.instance
+        // ignore: deprecated_member_use
+        .reference()
+        .child('livingRoom/humidity');
+
+    livingRoomHumidityRef.onValue.listen((event) {
+      setState(() {
+        var value = event.snapshot.value;
+        if (value is num) {
+          livingRoomHumidityValue = value.toDouble();
+        } else {
+          livingRoomHumidityValue = 0.0;
+        }
+      });
+    });
+    DatabaseReference livingRoomTemperatureRef = FirebaseDatabase.instance
+        // ignore: deprecated_member_use
+        .reference()
+        .child('livingRoom/temperature');
+
+    livingRoomTemperatureRef.onValue.listen((event) {
+      setState(() {
+        var value = event.snapshot.value;
+        if (value is num) {
+          livingRoomTemperatureValue = value.toDouble();
+        } else {
+          livingRoomTemperatureValue = 0.0;
+        }
+      });
+    });
+
+    /* Cập nhật nhiệt độ và độ ẩm của KitchenRoom */
+    DatabaseReference kitChenRoomHumidityRef = FirebaseDatabase.instance
+        // ignore: deprecated_member_use
+        .reference()
+        .child('kitchenRoom/humidity');
+
+    kitChenRoomHumidityRef.onValue.listen((event) {
+      setState(() {
+        var value = event.snapshot.value;
+        if (value is num) {
+          kitchenRoomHumidityValue = value.toDouble();
+        } else {
+          kitchenRoomHumidityValue = 0.0;
+        }
+      });
+    });
+    DatabaseReference kitChenRoomTemperatureRef = FirebaseDatabase.instance
+        // ignore: deprecated_member_use
+        .reference()
+        .child('kitchenRoom/temperature');
+
+    kitChenRoomTemperatureRef.onValue.listen((event) {
+      setState(() {
+        var value = event.snapshot.value;
+        if (value is num) {
+          kitchenRoomTemperatureValue = value.toDouble();
+        } else {
+          kitchenRoomTemperatureValue = 0.0;
+        }
+      });
+    });
+
+    /* Cập nhật nhiệt độ và độ ẩm của BedRoom */
+    DatabaseReference bedRoomHumidityRef = FirebaseDatabase.instance
+        // ignore: deprecated_member_use
+        .reference()
+        .child('bedRoom/humidity');
+
+    bedRoomHumidityRef.onValue.listen((event) {
+      setState(() {
+        var value = event.snapshot.value;
+        if (value is num) {
+          bedRoomHumidityValue = value.toDouble();
+        } else {
+          bedRoomHumidityValue = 0.0;
+        }
+      });
+    });
+
+    DatabaseReference bedRoomTemperatureRef = FirebaseDatabase.instance
+        // ignore: deprecated_member_use
+        .reference()
+        .child('bedRoom/temperature');
+
+    bedRoomTemperatureRef.onValue.listen((event) {
+      setState(() {
+        var value = event.snapshot.value;
+        if (value is num) {
+          bedRoomTemperatureValue = value.toDouble();
+        } else {
+          bedRoomTemperatureValue = 0.0;
+        }
+      });
+    });
   }
 
   void onSwitchChanged(
@@ -63,8 +237,8 @@ class _LightScreenState extends State<LightScreen> {
         _livingRoomFirebaseService.updateSwitchStatus(value);
       }
       if (isKitchen) {
-        kitchenSwitchValue = value;
-        _saveSwitchState(value, 'kitchen');
+        kitchenRoomSwitchValue = value;
+        _saveSwitchState(value, 'kitchenRoom');
         _kitchenFirebaseService.updateSwitchStatus(value);
       }
       if (isBedRoom) {
@@ -83,9 +257,9 @@ class _LightScreenState extends State<LightScreen> {
       if (roomKey == 'livingRoom') {
         livingRoomSwitchValue = switchValue;
         livingRoomBrightnessValue = brightnessValue;
-      } else if (roomKey == 'kitchen') {
-        kitchenSwitchValue = switchValue;
-        kitchenBrightnessValue = brightnessValue;
+      } else if (roomKey == 'kitchenRoom') {
+        kitchenRoomSwitchValue = switchValue;
+        kitchenRoomBrightnessValue = brightnessValue;
       } else if (roomKey == 'bedRoom') {
         bedRoomSwitchValue = switchValue;
         bedRoomBrightnessValue = brightnessValue;
@@ -104,8 +278,8 @@ class _LightScreenState extends State<LightScreen> {
     setState(() {
       if (roomKey == 'livingRoom') {
         livingRoomBrightnessValue = brightnessValue;
-      } else if (roomKey == 'kitchen') {
-        kitchenBrightnessValue = brightnessValue;
+      } else if (roomKey == 'kitchenRoom') {
+        kitchenRoomBrightnessValue = brightnessValue;
       } else if (roomKey == 'bedRoom') {
         bedRoomBrightnessValue = brightnessValue;
       }
@@ -125,8 +299,8 @@ class _LightScreenState extends State<LightScreen> {
   Future<void> _loadSwitchAndBrightnessValues() async {
     await _loadSwitchState('livingRoom');
     await _loadBrightnessValue('livingRoom');
-    await _loadSwitchState('kitchen');
-    await _loadBrightnessValue('kitchen');
+    await _loadSwitchState('kitchenRoom');
+    await _loadBrightnessValue('kitchenRoom');
     await _loadSwitchState('bedRoom');
     await _loadBrightnessValue('bedRoom');
   }
@@ -256,21 +430,21 @@ class _LightScreenState extends State<LightScreen> {
               );
             case 1:
               return KitchenControlWidget(
-                brightnessValue: kitchenBrightnessValue,
+                brightnessValue: kitchenRoomBrightnessValue,
                 onBrightnessChanged: (value) async {
                   setState(() {
-                    kitchenBrightnessValue = value;
-                    _saveBrightnessValue(value, 'kitchen');
+                    kitchenRoomBrightnessValue = value;
+                    _saveBrightnessValue(value, 'kitchenRoom');
                   });
                   await _updateBrightness(
-                      _kitchenFirebaseService, kitchenBrightnessValue);
+                      _kitchenFirebaseService, kitchenRoomBrightnessValue);
                 },
-                temperatureValue: kitchenTemperatureValue,
-                humidityValue: kitchenHumidityValue,
+                temperatureValue: kitchenRoomTemperatureValue,
+                humidityValue: kitchenRoomHumidityValue,
                 onSwitchChanged: () {
-                  onSwitchChanged(!kitchenSwitchValue, false, true, false);
+                  onSwitchChanged(!kitchenRoomSwitchValue, false, true, false);
                 },
-                switchValue: kitchenSwitchValue,
+                switchValue: kitchenRoomSwitchValue,
               );
             case 2:
               return BedRoomControlWidget(
