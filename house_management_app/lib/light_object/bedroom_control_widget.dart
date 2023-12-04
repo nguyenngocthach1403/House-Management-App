@@ -165,7 +165,7 @@ class BedRoomControlWidget extends StatelessWidget {
                     child: Text(
                       "${temperatureValue} °C",
                       style: const TextStyle(
-                        fontSize: 19.0,
+                        fontSize: 18.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
