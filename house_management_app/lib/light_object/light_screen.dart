@@ -16,8 +16,8 @@ class LightScreen extends StatefulWidget {
 
 class _LightScreenState extends State<LightScreen> {
   double livingRoomBrightnessValue = 0;
-  double livingRoomTemperatureValue = 31.0;
-  double livingRoomHumidityValue = 28.2;
+  double livingRoomTemperatureValue = 0;
+  double livingRoomHumidityValue = 0;
   bool livingRoomSwitchValue = false;
   String livingRoomLightStatus = 'OFF';
 
