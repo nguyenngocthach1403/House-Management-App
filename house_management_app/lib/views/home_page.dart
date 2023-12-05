@@ -3,11 +3,8 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:house_management_app/custom_scaffold/weather.dart';
-import 'package:house_management_app/firebase_service.dart';
 import 'package:house_management_app/models/sharedPreferences.dart';
 import 'package:house_management_app/screen_login/welcome_screen.dart';
-import 'package:house_management_app/light_object/light_screen.dart';
-
 import 'package:house_management_app/views/feature.dart';
 import 'package:house_management_app/views/notification.dart';
 import 'package:house_management_app/views/room.dart';
@@ -16,7 +13,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -29,53 +26,30 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isAlarmLight = false;
   String alarmLightStatus = '';
 
-  late FirebaseService _livingRoomFirebaseService;
-  late FirebaseService _kitchenFirebaseService;
-  late FirebaseService _bedRoomFirebaseService;
-
   List<Map<String, dynamic>> featureLst = [
     {"icon": Icons.lock_open_rounded, 'name': "open_door"},
     {"icon": Icons.lightbulb, 'name': "alarm"},
   ];
-
-  late String livingRoomLightStatus;
-  late bool livingRoomSwitchValue;
-  List<Room> lstRooms = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _livingRoomFirebaseService = FirebaseService('livingRoom');
-    _kitchenFirebaseService = FirebaseService('kitchenRoom');
-    _bedRoomFirebaseService = FirebaseService('bedRoom');
-    DatabaseReference livingRoomLightStatusRef =
-        // ignore: deprecated_member_use
-        FirebaseDatabase.instance.reference().child('livingRoom/light/status');
-    livingRoomLightStatusRef.onValue.listen((event) {
-      setState(() {
-        livingRoomLightStatus = event.snapshot.value.toString();
-        livingRoomSwitchValue = (livingRoomLightStatus == 'ON');
-
-        // Update lstRooms here
-        updateRoomList();
-      });
-    });
-  }
-
-  void updateRoomList() {
-    setState(() {
-      lstRooms = [
-        Room(
+  List<ListRoom> lstroom = List.filled(
+      5,
+      ListRoom(
           iconLight: Icons.lightbulb,
           iconC: Icons.thermostat,
           iconWater: Icons.water_drop,
-          textLight: livingRoomSwitchValue ? "ON" : "OFF",
+          textLight: "ON",
           textC: "22°C",
-          textWater: "10%",
-          roomName: "LivingRoom",
-        ),
-      ];
-    });
+          textWater: "10%"),growable: true
+          );
+  Color _getIconColor(IconData icon) {
+    if (icon == Icons.lightbulb) {
+      return isAlarmLight
+          ? Colors.yellow
+          : Colors.white; // Màu khi bật hoặc tắt đèn
+    } else if (icon == Icons.lock_open_rounded) {
+      return isOpendoor ? Colors.green : Colors.red; // Màu khi mở hoặc đóng cửa
+    } else {
+      return Colors.white; // Màu mặc định cho các biểu tượng khác
+    }
   }
 
   @override
@@ -83,11 +57,15 @@ class _HomeScreenState extends State<HomeScreen> {
     DatabaseReference _isOpen = FirebaseDatabase.instance.ref("door/status");
     _isOpen.onValue.listen((event) {
       setState(() {
-        doorstatus = event.snapshot.value.toString();
-        (doorstatus == 'OPEN') ? isOpendoor = true : isOpendoor = false;
+        doorstatus = event.snapshot.value
+            .toString(); //Gán dữ liệu được lấy trên firebase vào chuỗi
+        // print(event.snapshot.value);
+        (doorstatus == 'OPEN')
+            ? isOpendoor = true
+            : isOpendoor =
+                false; // So sánh dữ liệu được lấy (Nếu là ON thì đèn sáng ,OFF đèn tắt)
       });
     });
-
     DatabaseReference _isOn = FirebaseDatabase.instance.ref("alarmLed/status");
     _isOn.onValue.listen((event) {
       setState(() {
@@ -95,7 +73,6 @@ class _HomeScreenState extends State<HomeScreen> {
         (alarmLightStatus == 'ON') ? isAlarmLight = true : isAlarmLight = false;
       });
     });
-
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -193,10 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                    
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                      child: Container(
+                      Padding(
                         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                         child: Container(
                           padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
@@ -258,10 +232,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   );
                                                 });
                                           }
-                                        } else {
-                                          isOpendoor = !isOpendoor;
-                                          doorstatus =
-                                              _isOpen.set("OPEN").toString();
                                         }
                                         if (featureLst[index]['name'] ==
                                             'alarm') {
@@ -294,22 +264,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   );
                                                 });
                                           }
-                                        } else {
-                                          isAlarmLight = !isAlarmLight;
-                                          alarmLightStatus =
-                                              _isOn.set("ON").toString();
                                         }
-                                      }
-                                    });
-                                  },
+                                      });
+                                    },
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        ),
                       ),
-                    ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(15, 10, 15, 15),
                         child: Row(
@@ -322,29 +286,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                   // fontWeight: FontWeight.bold,
                                   fontSize: 25),
                             ),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, '/settingscreen');
+                                },
+                                child: const Text(
+                                  "See all",
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 15,
+                                  ),
+                                ))
                           ],
                         ),
                       ),
-                    
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text(
-                            "Room",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 25,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 1, left: 6, right: 7),
-                      child: Column(
-                        children: [
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(top: 1, left: 6, right: 7),
+                        child: Column(children: [
                           Container(
                             padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                             color: Colors.transparent,
@@ -354,29 +314,27 @@ class _HomeScreenState extends State<HomeScreen> {
                               scrollDirection: Axis.horizontal,
                               children: [
                                 Row(
-                                  children: List.generate(
-                                    lstRooms.length,
-                                    (index) => ListRoom(room: lstRooms[index]),
-                                  ),
-                                ),
+                                  children: List.generate(lstroom.length,
+                                      (index) => lstroom[index]),
+                                )
                               ],
                             ),
                           )
-                        ],
+                        ]),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: const [
-                          Text(
-                            "Notification",
-                            style: TextStyle(color: Colors.black, fontSize: 25),
-                          )
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: const [
+                            Text(
+                              "Notification",
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 25),
+                            )
+                          ],
+                        ),
                       ),
-                    ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
                         child: GestureDetector(
