@@ -6,8 +6,6 @@ import 'package:house_management_app/custom_scaffold/weather.dart';
 import 'package:house_management_app/firebase_service.dart';
 import 'package:house_management_app/models/sharedPreferences.dart';
 import 'package:house_management_app/screen_login/welcome_screen.dart';
-import 'package:house_management_app/light_object/light_screen.dart';
-
 import 'package:house_management_app/views/feature.dart';
 import 'package:house_management_app/views/notification.dart';
 import 'package:house_management_app/views/room.dart';
@@ -16,7 +14,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -39,9 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   late String livingRoomLightStatus;
-<<<<<<< Updated upstream
-  late bool livingRoomSwitchValue;
-=======
   late String kitchenRoomLightStatus;
   late String bedRoomLightStatus;
 
@@ -49,7 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
   late bool kitchenRoomSwitchValue;
   late bool bedRoomSwitchValue;
 
->>>>>>> Stashed changes
   List<Room> lstRooms = [];
 
   @override
@@ -65,11 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         livingRoomLightStatus = event.snapshot.value.toString();
         livingRoomSwitchValue = (livingRoomLightStatus == 'ON');
-<<<<<<< Updated upstream
-
-        // Update lstRooms here
-        updateRoomList();
-=======
         // Update lstRooms here
         updateRoom('livingRoom');
       });
@@ -94,27 +83,10 @@ class _HomeScreenState extends State<HomeScreen> {
         bedRoomSwitchValue = (bedRoomLightStatus == 'ON');
         // Update lstRooms here
         updateRoom('bedRoom');
->>>>>>> Stashed changes
       });
     });
   }
 
-<<<<<<< Updated upstream
-  void updateRoomList() {
-    setState(() {
-      lstRooms = [
-        Room(
-          iconLight: Icons.lightbulb,
-          iconC: Icons.thermostat,
-          iconWater: Icons.water_drop,
-          textLight: livingRoomSwitchValue ? "ON" : "OFF",
-          textC: "22°C",
-          textWater: "10%",
-          roomName: "LivingRoom",
-        ),
-      ];
-    });
-=======
   void updateRoom(String roomName) {
     setState(() {
       // Kiểm tra xem phòng đã tồn tại trong danh sách chưa
@@ -160,7 +132,6 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       return Colors.white; // Màu mặc định cho các biểu tượng khác
     }
->>>>>>> Stashed changes
   }
 
   @override
@@ -168,11 +139,15 @@ class _HomeScreenState extends State<HomeScreen> {
     DatabaseReference _isOpen = FirebaseDatabase.instance.ref("door/status");
     _isOpen.onValue.listen((event) {
       setState(() {
-        doorstatus = event.snapshot.value.toString();
-        (doorstatus == 'OPEN') ? isOpendoor = true : isOpendoor = false;
+        doorstatus = event.snapshot.value
+            .toString(); //Gán dữ liệu được lấy trên firebase vào chuỗi
+        // print(event.snapshot.value);
+        (doorstatus == 'OPEN')
+            ? isOpendoor = true
+            : isOpendoor =
+                false; // So sánh dữ liệu được lấy (Nếu là ON thì đèn sáng ,OFF đèn tắt)
       });
     });
-
     DatabaseReference _isOn = FirebaseDatabase.instance.ref("alarmLed/status");
     _isOn.onValue.listen((event) {
       setState(() {
@@ -278,10 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                      child: Container(
+                      Padding(
                         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                         child: Container(
                           padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
@@ -343,10 +315,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   );
                                                 });
                                           }
-                                        } else {
-                                          isOpendoor = !isOpendoor;
-                                          doorstatus =
-                                              _isOpen.set("OPEN").toString();
                                         }
                                         if (featureLst[index]['name'] ==
                                             'alarm') {
@@ -379,14 +347,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   );
                                                 });
                                           }
-                                        } else {
-                                          isAlarmLight = !isAlarmLight;
-                                          alarmLightStatus =
-                                              _isOn.set("ON").toString();
                                         }
-                                      }
-                                    });
-                                  },
+                                      });
+                                    },
+                                  ),
                                 ),
                               ),
                             ],
@@ -405,29 +369,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                   // fontWeight: FontWeight.bold,
                                   fontSize: 25),
                             ),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, '/settingscreen');
+                                },
+                                child: const Text(
+                                  "See all",
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 15,
+                                  ),
+                                ))
                           ],
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text(
-                            "Room",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 25,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 1, left: 6, right: 7),
-                      child: Column(
-                        children: [
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(top: 1, left: 6, right: 7),
+                        child: Column(children: [
                           Container(
                             padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                             color: Colors.transparent,
@@ -435,19 +395,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 200,
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
-<<<<<<< Updated upstream
-                              children: [
-                                Row(
-                                  children: List.generate(
-                                    lstRooms.length,
-                                    (index) => ListRoom(room: lstRooms[index]),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-=======
                               itemCount: lstRooms.length,
                               itemBuilder: (context, index) {
                                 return ListRoom(
@@ -457,19 +404,19 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ]),
->>>>>>> Stashed changes
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: const [
-                          Text(
-                            "Notification",
-                            style: TextStyle(color: Colors.black, fontSize: 25),
-                          )
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: const [
+                            Text(
+                              "Notification",
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 25),
+                            )
+                          ],
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
