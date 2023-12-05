@@ -193,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                    ),
+                    
                     Padding(
                       padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                       child: Container(
@@ -307,7 +307,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           ),
                         ),
+                        ),
                       ),
+                    ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(15, 10, 15, 15),
                         child: Row(
@@ -323,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
-                    ),
+                    
                     Padding(
                       padding: const EdgeInsets.all(15),
                       child: Row(
@@ -374,6 +376,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                         ],
                       ),
+                    ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
                         child: GestureDetector(
