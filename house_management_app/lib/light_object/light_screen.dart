@@ -33,6 +33,8 @@ class _LightScreenState extends State<LightScreen> {
   bool bedRoomSwitchValue = false;
   String bedRoomLightStatus = 'OFF';
 
+  int alarmLedTimeValue = 0;
+
   late SharedPreferences _prefs;
 
   late FirebaseService _livingRoomFirebaseService;
@@ -60,6 +62,22 @@ class _LightScreenState extends State<LightScreen> {
     _livingRoomFirebaseService = FirebaseService('livingRoom');
     _kitchenFirebaseService = FirebaseService('kitchenRoom');
     _bedRoomFirebaseService = FirebaseService('bedRoom');
+
+    DatabaseReference alarmLedTimeRef =
+        FirebaseDatabase.instance.reference().child('alarmLed/time');
+
+    alarmLedTimeRef.onValue.listen((event) {
+      setState(() {
+        var value = event.snapshot.value;
+        if (value is num) {
+          alarmLedTimeValue = value.toInt();
+          // Cập nhật selectedTime khi giá trị time thay đổi
+          selectedTime = alarmLedTimeValue;
+        } else {
+          alarmLedTimeValue = 0;
+        }
+      });
+    });
 
     /* Cập nhật trạng thái của LivingRoom */
     DatabaseReference livingRoomLightStatusRef =
@@ -503,10 +521,12 @@ class _LightScreenState extends State<LightScreen> {
                 },
                 switchValue: bedRoomSwitchValue,
               );
+
             case 3:
               return AlarmControlWidget(
                 selectedTime: selectedTime,
                 selectedValue: selectedValue,
+                alarmLedTimeValue: alarmLedTimeValue,
                 incrementTime: incrementTime,
                 decrementTime: decrementTime,
                 onValueChange: onValueChange,

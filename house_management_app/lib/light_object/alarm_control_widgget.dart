@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-// ignore: unused_import
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AlarmControlWidget extends StatefulWidget {
   const AlarmControlWidget({
     Key? key,
+    required this.alarmLedTimeValue,
     required this.selectedTime,
     required this.selectedValue,
     required this.incrementTime,
     required this.decrementTime,
     required this.onValueChange,
   }) : super(key: key);
+
+  final int alarmLedTimeValue;
 
   final int selectedTime;
   final String selectedValue;
@@ -109,7 +110,9 @@ class _AlarmControlWidgetState extends State<AlarmControlWidget> {
                           ),
                         );
                       }),
-                      onChanged: widget.onValueChange,
+                      onChanged: (value) {
+                        widget.onValueChange(value);
+                      },
                       style: const TextStyle(
                         fontSize: 17.0,
                         color: Colors.black,

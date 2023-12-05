@@ -39,7 +39,17 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   late String livingRoomLightStatus;
+<<<<<<< Updated upstream
   late bool livingRoomSwitchValue;
+=======
+  late String kitchenRoomLightStatus;
+  late String bedRoomLightStatus;
+
+  late bool livingRoomSwitchValue;
+  late bool kitchenRoomSwitchValue;
+  late bool bedRoomSwitchValue;
+
+>>>>>>> Stashed changes
   List<Room> lstRooms = [];
 
   @override
@@ -55,13 +65,41 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         livingRoomLightStatus = event.snapshot.value.toString();
         livingRoomSwitchValue = (livingRoomLightStatus == 'ON');
+<<<<<<< Updated upstream
 
         // Update lstRooms here
         updateRoomList();
+=======
+        // Update lstRooms here
+        updateRoom('livingRoom');
+      });
+    });
+
+    DatabaseReference kitchenRoomLightStatusRef =
+        FirebaseDatabase.instance.reference().child('kitchenRoom/light/status');
+    kitchenRoomLightStatusRef.onValue.listen((event) {
+      setState(() {
+        kitchenRoomLightStatus = event.snapshot.value.toString();
+        kitchenRoomSwitchValue = (kitchenRoomLightStatus == 'ON');
+        // Update lstRooms here
+        updateRoom('kitchenRoom');
+      });
+    });
+
+    DatabaseReference bedRoomLightStatusRef =
+        FirebaseDatabase.instance.reference().child('bedRoom/light/status');
+    bedRoomLightStatusRef.onValue.listen((event) {
+      setState(() {
+        bedRoomLightStatus = event.snapshot.value.toString();
+        bedRoomSwitchValue = (bedRoomLightStatus == 'ON');
+        // Update lstRooms here
+        updateRoom('bedRoom');
+>>>>>>> Stashed changes
       });
     });
   }
 
+<<<<<<< Updated upstream
   void updateRoomList() {
     setState(() {
       lstRooms = [
@@ -76,6 +114,53 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ];
     });
+=======
+  void updateRoom(String roomName) {
+    setState(() {
+      // Kiểm tra xem phòng đã tồn tại trong danh sách chưa
+      var existingRoomIndex =
+          lstRooms.indexWhere((room) => room.roomName == roomName);
+
+      if (existingRoomIndex != -1) {
+        // Nếu phòng đã tồn tại, cập nhật thông tin
+        lstRooms[existingRoomIndex].textLight = roomName == 'livingRoom'
+            ? (livingRoomSwitchValue ? "ON" : "OFF")
+            : roomName == 'kitchenRoom'
+                ? (kitchenRoomSwitchValue ? "ON" : "OFF")
+                : (bedRoomSwitchValue ? "ON" : "OFF");
+        // Cập nhật các thông tin khác tương ứng
+      } else {
+        // Nếu phòng chưa tồn tại, thêm mới vào danh sách
+        lstRooms.add(
+          Room(
+            iconLight: Icons.lightbulb,
+            iconC: Icons.thermostat,
+            iconWater: Icons.water_drop,
+            textLight: roomName == 'livingRoom'
+                ? (livingRoomSwitchValue ? "ON" : "OFF")
+                : roomName == 'kitchenRoom'
+                    ? (kitchenRoomSwitchValue ? "ON" : "OFF")
+                    : (bedRoomSwitchValue ? "ON" : "OFF"),
+            textC: "22°C",
+            textWater: "40", // Add an empty string for textWater
+            roomName: roomName,
+          ),
+        );
+      }
+    });
+  }
+
+  Color _getIconColor(IconData icon) {
+    if (icon == Icons.lightbulb) {
+      return isAlarmLight
+          ? Colors.yellow
+          : Colors.white; // Màu khi bật hoặc tắt đèn
+    } else if (icon == Icons.lock_open_rounded) {
+      return isOpendoor ? Colors.green : Colors.red; // Màu khi mở hoặc đóng cửa
+    } else {
+      return Colors.white; // Màu mặc định cho các biểu tượng khác
+    }
+>>>>>>> Stashed changes
   }
 
   @override
@@ -348,8 +433,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.transparent,
                             width: MediaQuery.of(context).size.width,
                             height: 200,
-                            child: ListView(
+                            child: ListView.builder(
                               scrollDirection: Axis.horizontal,
+<<<<<<< Updated upstream
                               children: [
                                 Row(
                                   children: List.generate(
@@ -361,6 +447,17 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           )
                         ],
+=======
+                              itemCount: lstRooms.length,
+                              itemBuilder: (context, index) {
+                                return ListRoom(
+                                  room: lstRooms[index],
+                                );
+                              },
+                            ),
+                          ),
+                        ]),
+>>>>>>> Stashed changes
                       ),
                     ),
                     Padding(
