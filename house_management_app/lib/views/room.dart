@@ -44,7 +44,7 @@ class ListRoom extends StatelessWidget {
           child: Column(
             children: [
               const Text(
-                "Room Room",
+                "Room",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Padding(

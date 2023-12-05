@@ -103,7 +103,7 @@ class _AlarmControlWidgetState extends State<AlarmControlWidget> {
                           child: Text(
                             '$value' + ' mls',
                             style: const TextStyle(
-                              fontSize: 17.0,
+                              fontSize: 15.0,
                               color: Colors.black,
                             ),
                           ),
