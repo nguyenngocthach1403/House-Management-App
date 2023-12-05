@@ -118,14 +118,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               }),
               child: const Text(
-                "Control Panel",
+                "Controll Panel",
                 style: TextStyle(fontSize: 25, color: Colors.white),
               ),
             ),
             Row(
               children: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/notifications");
+                  },
                   icon: const Icon(Icons.notifications_active,
                       color: Colors.white),
                   iconSize: 30,
@@ -172,23 +174,23 @@ class _HomeScreenState extends State<HomeScreen> {
               temperature: 20,
             ),
             Expanded(
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: const Padding(
-                        padding: EdgeInsets.fromLTRB(15, 20, 0, 5),
-                        child: Text(
-                          "Feature",
-                          style: TextStyle(fontSize: 25),
+              child: SingleChildScrollView(
+                child: Container(
+                  decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(40),
+                          topRight: Radius.circular(40))),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: const Padding(
+                          padding: EdgeInsets.fromLTRB(15, 15, 0, 5),
+                          child: Text(
+                            "Feature",
+                            style: TextStyle(fontSize: 25),
+                          ),
                         ),
                       ),
                     ),
@@ -196,55 +198,101 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                       child: Container(
                         padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                        color: Colors.transparent,
-                        width: MediaQuery.of(context).size.width,
-                        height: 100,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            Row(
-                              children: List.generate(
-                                featureLst.length,
-                                (index) => Feature(
-                                  icon: Icon(
-                                    featureLst[index]['icon'],
-                                    color: (featureLst[index]['icon'] ==
-                                                    Icons.lightbulb &&
-                                                isAlarmLight) ||
-                                            (featureLst[index]['icon'] ==
-                                                    Icons.lock_open_rounded &&
-                                                isOpendoor)
-                                        ? Colors.red
-                                        : Colors.white,
-                                    size: 50,
-                                  ),
-                                  action: () {
-                                    setState(() {
-                                      if (featureLst[index]['name'] ==
-                                          'open_door') {
-                                        if (isOpendoor) {
-                                          isOpendoor = !isOpendoor;
-                                          try {
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                          color: Colors.transparent,
+                          width: MediaQuery.of(context).size.width,
+                          height: 90,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              Row(
+                                children: List.generate(
+                                  featureLst.length,
+                                  (index) => Feature(
+                                    icon: Icon(
+                                      featureLst[index]['icon'],
+                                      // color: (featureLst[index]['icon'] ==
+                                      //                 Icons.lightbulb &&
+                                      //             isAlarmLight) ||
+                                      //         (featureLst[index]['icon'] ==
+                                      //                 Icons.lock_open_rounded &&
+                                      //             isOpendoor)
+                                      //     ? Colors.yellow
+                                      //     : Colors.white,
+                                      color: _getIconColor(
+                                          featureLst[index]['icon']),
+                                      size: 50,
+                                    ),
+                                    action: () {
+                                      setState(() {
+                                        if (featureLst[index]['name'] ==
+                                            'open_door') {
+                                          if (isOpendoor) {
+                                            isOpendoor = !isOpendoor;
+                                            try {
+                                              doorstatus = _isOpen
+                                                  .set("CLOSE")
+                                                  .toString();
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return const AlertDialog(
+                                                      content: Text(
+                                                          'Close the door'),
+                                                    );
+                                                  });
+                                            } catch (e) {
+                                              print(e.toString());
+                                            }
+                                          } else {
+                                            isOpendoor = !isOpendoor;
                                             doorstatus =
-                                                _isOpen.set("CLOSE").toString();
-                                          } catch (e) {
-                                            print(e.toString());
+                                                _isOpen.set("OPEN").toString();
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return const AlertDialog(
+                                                    content:
+                                                        Text('Open the door'),
+                                                  );
+                                                });
                                           }
                                         } else {
                                           isOpendoor = !isOpendoor;
                                           doorstatus =
                                               _isOpen.set("OPEN").toString();
                                         }
-                                      }
-                                      if (featureLst[index]['name'] ==
-                                          'alarm') {
-                                        if (isAlarmLight) {
-                                          isAlarmLight = !isAlarmLight;
-                                          try {
+                                        if (featureLst[index]['name'] ==
+                                            'alarm') {
+                                          if (isAlarmLight) {
+                                            isAlarmLight = !isAlarmLight;
+                                            try {
+                                              alarmLightStatus =
+                                                  _isOn.set("OFF").toString();
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return const AlertDialog(
+                                                      content: Text(
+                                                          'Turn Off Alarm Led'),
+                                                    );
+                                                  });
+                                            } catch (e) {
+                                              print(e.toString());
+                                            }
+                                          } else {
+                                            isAlarmLight = !isAlarmLight;
                                             alarmLightStatus =
-                                                _isOn.set("OFF").toString();
-                                          } catch (e) {
-                                            print(e.toString());
+                                                _isOn.set("ON").toString();
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return const AlertDialog(
+                                                    content: Text(
+                                                        'Turn On Alarm Led'),
+                                                  );
+                                                });
                                           }
                                         } else {
                                           isAlarmLight = !isAlarmLight;
@@ -256,6 +304,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                   },
                                 ),
                               ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 10, 15, 15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Room",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  // fontWeight: FontWeight.bold,
+                                  fontSize: 25),
                             ),
                           ],
                         ),
@@ -311,23 +374,78 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                         ],
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, '/notifications');
-                        },
-                        child: NotificationItem(
-                          iconData: Icons.notifications,
-                          message:
-                              "Nhiet do ngoai troi ddang o muc kha cao hay dung kem chong nang khi ra ngoai",
-                          title: "Nhiet do ngoai troi hien tai",
-                          time: TimeOfDay.now(),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/notifications');
+                          },
+                          child: StreamBuilder(
+                            stream: FirebaseFirestore.instance
+                                .collection('notifications')
+                                .orderBy('timeline', descending: true)
+                                .limit(1)
+                                .snapshots(),
+                            builder: (context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (snapshot.hasError) {
+                                return Text('Lỗi: ${snapshot.error}');
+                              }
+
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                // Kiểm tra xem có dữ liệu nào trong cache không để tránh hiển thị CircularProgressIndicator liên tục.
+                                if (snapshot.hasData &&
+                                    snapshot.data!.docs.isNotEmpty) {
+                                  var latestNotification =
+                                      snapshot.data!.docs.first;
+                                  var notificationItem = NotificationItem(
+                                    iconData: Icons.notifications,
+                                    message: latestNotification['message'],
+                                    title: latestNotification['title'],
+                                    time: TimeOfDay.fromDateTime(
+                                      (latestNotification['timeline']
+                                              as Timestamp)
+                                          .toDate(),
+                                    ),
+                                  );
+
+                                  return notificationItem;
+                                } else {
+                                  return NotificationItem(
+                                      iconData:
+                                          Icons.not_listed_location_outlined,
+                                      message: "",
+                                      title: "Not Found Notification",
+                                      time: TimeOfDay.now());
+                                }
+                              }
+
+                              if (!snapshot.hasData ||
+                                  snapshot.data!.docs.isEmpty) {
+                                return Text(
+                                    'Không có thông báo nào.'); // Hiển thị thông báo khi không có thông báo.
+                              }
+
+                              var latestNotification =
+                                  snapshot.data!.docs.first;
+                              var notificationItem = NotificationItem(
+                                iconData: Icons.notifications,
+                                message: latestNotification['message'],
+                                title: latestNotification['title'],
+                                time: TimeOfDay.fromDateTime(
+                                  (latestNotification['timeline'] as Timestamp)
+                                      .toDate(),
+                                ),
+                              );
+
+                              return notificationItem;
+                            },
+                          ),
                         ),
                       ),
-                    )
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

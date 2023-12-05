@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:house_management_app/animation/animation.dart';
 import 'package:house_management_app/models/sharedPreferences.dart';
 import 'signin_screen.dart';
 import 'sigup_screen.dart';
@@ -47,22 +48,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   vertical: 0,
                   horizontal: 40,
                 ),
-                child: Center(
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: const TextSpan(
-                      children: [
-                        TextSpan(
-                            text: 'Welcome Back!\n',
-                            style: TextStyle(
-                              fontSize: 45.0,
-                              fontWeight: FontWeight.w600,
-                            )),
-                        TextSpan(
-                            text:
-                                '\nEnter personal details to your employee account',
-                            style: TextStyle(fontSize: 20))
-                      ],
+                child: FadeAnimation(
+                  1.2,
+                  Center(
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: const TextSpan(
+                        children: [
+                          TextSpan(
+                              text: 'Welcome Back!\n',
+                              style: TextStyle(
+                                fontSize: 45.0,
+                                fontWeight: FontWeight.w600,
+                              )),
+                          TextSpan(
+                              text:
+                                  '\nEnter personal details to your employee account',
+                              style: TextStyle(fontSize: 20))
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -71,23 +75,26 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             flex: 1,
             child: Align(
               alignment: Alignment.bottomRight,
-              child: Row(
-                children: const [
-                  Expanded(
-                      child: WelcomeButton(
-                    buttonText: 'Sign in',
-                    onTap: SignInScreen(),
-                    color: Colors.transparent,
-                    textColor: Colors.white,
-                  )),
-                  Expanded(
-                      child: WelcomeButton(
-                    buttonText: 'Sign up',
-                    onTap: SignUpScreen(),
-                    color: Colors.white,
-                    textColor: Colors.green,
-                  )),
-                ],
+              child: FadeAnimation(
+                1.4,
+                Row(
+                  children: const [
+                    Expanded(
+                        child: WelcomeButton(
+                      buttonText: 'Sign in',
+                      onTap: SignInScreen(),
+                      color: Colors.transparent,
+                      textColor: Colors.white,
+                    )),
+                    Expanded(
+                        child: WelcomeButton(
+                      buttonText: 'Sign up',
+                      onTap: SignUpScreen(),
+                      color: Colors.white,
+                      textColor: Colors.green,
+                    )),
+                  ],
+                ),
               ),
             ),
           )
