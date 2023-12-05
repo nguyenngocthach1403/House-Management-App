@@ -27,101 +27,40 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isAlarmLight = false;
   String alarmLightStatus = '';
 
-  late FirebaseService _livingRoomFirebaseService;
-  late FirebaseService _kitchenFirebaseService;
-  late FirebaseService _bedRoomFirebaseService;
-
   List<Map<String, dynamic>> featureLst = [
     {"icon": Icons.lock_open_rounded, 'name': "open_door"},
     {"icon": Icons.lightbulb, 'name': "alarm"},
   ];
 
-  late String livingRoomLightStatus;
-  late String kitchenRoomLightStatus;
-  late String bedRoomLightStatus;
-
-  late bool livingRoomSwitchValue;
-  late bool kitchenRoomSwitchValue;
-  late bool bedRoomSwitchValue;
-
-  List<Room> lstRooms = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _livingRoomFirebaseService = FirebaseService('livingRoom');
-    _kitchenFirebaseService = FirebaseService('kitchenRoom');
-    _bedRoomFirebaseService = FirebaseService('bedRoom');
-    DatabaseReference livingRoomLightStatusRef =
-        // ignore: deprecated_member_use
-        FirebaseDatabase.instance.reference().child('livingRoom/light/status');
-    livingRoomLightStatusRef.onValue.listen((event) {
-      setState(() {
-        livingRoomLightStatus = event.snapshot.value.toString();
-        livingRoomSwitchValue = (livingRoomLightStatus == 'ON');
-        // Update lstRooms here
-        updateRoom('livingRoom');
-      });
-    });
-
-    DatabaseReference kitchenRoomLightStatusRef =
-        FirebaseDatabase.instance.reference().child('kitchenRoom/light/status');
-    kitchenRoomLightStatusRef.onValue.listen((event) {
-      setState(() {
-        kitchenRoomLightStatus = event.snapshot.value.toString();
-        kitchenRoomSwitchValue = (kitchenRoomLightStatus == 'ON');
-        // Update lstRooms here
-        updateRoom('kitchenRoom');
-      });
-    });
-
-    DatabaseReference bedRoomLightStatusRef =
-        FirebaseDatabase.instance.reference().child('bedRoom/light/status');
-    bedRoomLightStatusRef.onValue.listen((event) {
-      setState(() {
-        bedRoomLightStatus = event.snapshot.value.toString();
-        bedRoomSwitchValue = (bedRoomLightStatus == 'ON');
-        // Update lstRooms here
-        updateRoom('bedRoom');
-      });
-    });
-  }
-
-  void updateRoom(String roomName) {
-    setState(() {
-      // Kiểm tra xem phòng đã tồn tại trong danh sách chưa
-      var existingRoomIndex =
-          lstRooms.indexWhere((room) => room.roomName == roomName);
-
-      if (existingRoomIndex != -1) {
-        // Nếu phòng đã tồn tại, cập nhật thông tin
-        lstRooms[existingRoomIndex].textLight = roomName == 'livingRoom'
-            ? (livingRoomSwitchValue ? "ON" : "OFF")
-            : roomName == 'kitchenRoom'
-                ? (kitchenRoomSwitchValue ? "ON" : "OFF")
-                : (bedRoomSwitchValue ? "ON" : "OFF");
-        // Cập nhật các thông tin khác tương ứng
-      } else {
-        // Nếu phòng chưa tồn tại, thêm mới vào danh sách
-        lstRooms.add(
-          Room(
-            iconLight: Icons.lightbulb,
-            iconC: Icons.thermostat,
-            iconWater: Icons.water_drop,
-            textLight: roomName == 'livingRoom'
-                ? (livingRoomSwitchValue ? "ON" : "OFF")
-                : roomName == 'kitchenRoom'
-                    ? (kitchenRoomSwitchValue ? "ON" : "OFF")
-                    : (bedRoomSwitchValue ? "ON" : "OFF"),
-            textC: "22°C",
-            textWater: "40", // Add an empty string for textWater
-            roomName: roomName,
-          ),
-        );
-      }
-    });
-  }
-
+  List<Room> lstRooms = [
+    Room(
+      iconLight: Icons.lightbulb,
+      iconC: Icons.thermostat,
+      iconWater: Icons.water_drop,
+      textLight: "OFF",
+      textC: "22°C",
+      textWater: "10%",
+      roomName: "LivingRoom",
+    ),
+    Room(
+      iconLight: Icons.lightbulb,
+      iconC: Icons.thermostat,
+      iconWater: Icons.water_drop,
+      textLight: "OFF",
+      textC: "22°C",
+      textWater: "10%",
+      roomName: "KitchenRoom",
+    ),
+    Room(
+      iconLight: Icons.lightbulb,
+      iconC: Icons.thermostat,
+      iconWater: Icons.water_drop,
+      textLight: "OFF",
+      textC: "22°C",
+      textWater: "10%",
+      roomName: "BedRoom",
+    ),
+  ];
   Color _getIconColor(IconData icon) {
     if (icon == Icons.lightbulb) {
       return isAlarmLight

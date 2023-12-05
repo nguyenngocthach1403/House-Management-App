@@ -1,21 +1,12 @@
 import 'package:flutter/material.dart';
 
 class Room {
-<<<<<<< Updated upstream
-  final iconLight;
-  final iconC;
-  final iconWater;
-  late final textLight;
-  late final textC;
-  late final textWater;
-=======
   final IconData iconLight;
   final IconData iconC;
   final IconData iconWater;
   late final String textLight;
   late final String textC;
   late final String textWater;
->>>>>>> Stashed changes
   final String roomName;
 
   Room({
@@ -32,14 +23,10 @@ class Room {
 class ListRoom extends StatelessWidget {
   final Room room;
 
-<<<<<<< Updated upstream
-  ListRoom({Key? key, required this.room}) : super(key: key);
-=======
   ListRoom({
     Key? key,
     required this.room,
   }) : super(key: key);
->>>>>>> Stashed changes
 
   final LinearGradient gradient = const LinearGradient(
     colors: [Colors.white, Colors.green],
@@ -70,21 +57,15 @@ class ListRoom extends StatelessWidget {
         ),
         child: Column(
           children: [
-<<<<<<< Updated upstream
-            Text(
-              room.roomName,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-=======
             Padding(
-              padding: EdgeInsets.only(top: 10.0),
+              padding: EdgeInsets.only(top: 10),
               child: Text(
                 room.roomName,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: Colors.blue[300]),
+                    color: Colors.blue[400]),
               ),
->>>>>>> Stashed changes
             ),
             Padding(
               padding: const EdgeInsets.all(5),
@@ -125,11 +106,7 @@ class ListRoom extends StatelessWidget {
                         fontSize: 20,
                       ),
                     ),
-<<<<<<< Updated upstream
-                  )
-=======
                   ),
->>>>>>> Stashed changes
                 ],
               ),
             ),
