@@ -16,8 +16,8 @@ class LightScreen extends StatefulWidget {
 
 class _LightScreenState extends State<LightScreen> {
   double livingRoomBrightnessValue = 0;
-  double livingRoomTemperatureValue = 31.0;
-  double livingRoomHumidityValue = 28.2;
+  double livingRoomTemperatureValue = 0;
+  double livingRoomHumidityValue = 0;
   bool livingRoomSwitchValue = false;
   String livingRoomLightStatus = 'OFF';
 
@@ -33,6 +33,8 @@ class _LightScreenState extends State<LightScreen> {
   bool bedRoomSwitchValue = false;
   String bedRoomLightStatus = 'OFF';
 
+  int alarmLedTimeValue = 0;
+
   late SharedPreferences _prefs;
 
   late FirebaseService _livingRoomFirebaseService;
@@ -47,6 +49,11 @@ class _LightScreenState extends State<LightScreen> {
       FirebaseDatabase.instance.reference().child('alarmLed');
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     _loadSwitchAndBrightnessValues();
@@ -56,29 +63,49 @@ class _LightScreenState extends State<LightScreen> {
     _kitchenFirebaseService = FirebaseService('kitchenRoom');
     _bedRoomFirebaseService = FirebaseService('bedRoom');
 
+    DatabaseReference alarmLedTimeRef =
+        FirebaseDatabase.instance.reference().child('alarmLed/time');
+
+    alarmLedTimeRef.onValue.listen((event) {
+      setState(() {
+        var value = event.snapshot.value;
+        if (value is num) {
+          alarmLedTimeValue = value.toInt();
+          // Cập nhật selectedTime khi giá trị time thay đổi
+          selectedTime = alarmLedTimeValue;
+        } else {
+          alarmLedTimeValue = 0;
+        }
+      });
+    });
+
     /* Cập nhật trạng thái của LivingRoom */
     DatabaseReference livingRoomLightStatusRef =
         // ignore: deprecated_member_use
         FirebaseDatabase.instance.reference().child('livingRoom/light/status');
     livingRoomLightStatusRef.onValue.listen((event) {
-      setState(() {
-        livingRoomLightStatus = event.snapshot.value.toString();
-        livingRoomSwitchValue = (livingRoomLightStatus == 'ON');
-      });
+      if (mounted) {
+        setState(() {
+          livingRoomLightStatus = event.snapshot.value.toString();
+          livingRoomSwitchValue = (livingRoomLightStatus == 'ON');
+        });
+      }
     });
     DatabaseReference livingRoomBrightnessRef = FirebaseDatabase.instance
         // ignore: deprecated_member_use
         .reference()
         .child('livingRoom/light/brightness');
     livingRoomBrightnessRef.onValue.listen((event) {
-      setState(() {
-        var value = event.snapshot.value;
-        if (value is num) {
-          livingRoomBrightnessValue = value.toDouble();
-        } else {
-          livingRoomBrightnessValue = 0.0;
-        }
-      });
+      if (mounted) {
+        setState(() {
+          var value = event.snapshot.value;
+          if (value is num) {
+            livingRoomBrightnessValue = value.toDouble();
+          } else {
+            livingRoomBrightnessValue = 0.0;
+          }
+        });
+      }
     });
 
     /* Cập nhật trạng thái của KitchenRoom */
@@ -86,24 +113,28 @@ class _LightScreenState extends State<LightScreen> {
         // ignore: deprecated_member_use
         FirebaseDatabase.instance.reference().child('kitchenRoom/light/status');
     kitchenRoomLightStatusRef.onValue.listen((event) {
-      setState(() {
-        kitchenRoomLightStatus = event.snapshot.value.toString();
-        kitchenRoomSwitchValue = (kitchenRoomLightStatus == 'ON');
-      });
+      if (mounted) {
+        setState(() {
+          kitchenRoomLightStatus = event.snapshot.value.toString();
+          kitchenRoomSwitchValue = (kitchenRoomLightStatus == 'ON');
+        });
+      }
     });
     DatabaseReference kitchenRoomBrightnessRef = FirebaseDatabase.instance
         // ignore: deprecated_member_use
         .reference()
         .child('kitchenRoom/light/brightness');
     kitchenRoomBrightnessRef.onValue.listen((event) {
-      setState(() {
-        var value = event.snapshot.value;
-        if (value is num) {
-          kitchenRoomBrightnessValue = value.toDouble();
-        } else {
-          kitchenRoomBrightnessValue = 0.0;
-        }
-      });
+      if (mounted) {
+        setState(() {
+          var value = event.snapshot.value;
+          if (value is num) {
+            kitchenRoomBrightnessValue = value.toDouble();
+          } else {
+            kitchenRoomBrightnessValue = 0.0;
+          }
+        });
+      }
     });
 
     /* Cập nhật trạng thái của BedRoom */
@@ -120,14 +151,16 @@ class _LightScreenState extends State<LightScreen> {
         // ignore: deprecated_member_use
         FirebaseDatabase.instance.reference().child('bedRoom/light/brightness');
     bedRoomBrightnessRef.onValue.listen((event) {
-      setState(() {
-        var value = event.snapshot.value;
-        if (value is num) {
-          bedRoomBrightnessValue = value.toDouble();
-        } else {
-          bedRoomBrightnessValue = 0.0;
-        }
-      });
+      if (mounted) {
+        setState(() {
+          var value = event.snapshot.value;
+          if (value is num) {
+            bedRoomBrightnessValue = value.toDouble();
+          } else {
+            bedRoomBrightnessValue = 0.0;
+          }
+        });
+      }
     });
 
     /* Cập nhật nhiệt độ và độ ẩm của LivingRoom */
@@ -137,14 +170,16 @@ class _LightScreenState extends State<LightScreen> {
         .child('livingRoom/humidity');
 
     livingRoomHumidityRef.onValue.listen((event) {
-      setState(() {
-        var value = event.snapshot.value;
-        if (value is num) {
-          livingRoomHumidityValue = value.toDouble();
-        } else {
-          livingRoomHumidityValue = 0.0;
-        }
-      });
+      if (mounted) {
+        setState(() {
+          var value = event.snapshot.value;
+          if (value is num) {
+            livingRoomHumidityValue = value.toDouble();
+          } else {
+            livingRoomHumidityValue = 0.0;
+          }
+        });
+      }
     });
     DatabaseReference livingRoomTemperatureRef = FirebaseDatabase.instance
         // ignore: deprecated_member_use
@@ -152,14 +187,16 @@ class _LightScreenState extends State<LightScreen> {
         .child('livingRoom/temperature');
 
     livingRoomTemperatureRef.onValue.listen((event) {
-      setState(() {
-        var value = event.snapshot.value;
-        if (value is num) {
-          livingRoomTemperatureValue = value.toDouble();
-        } else {
-          livingRoomTemperatureValue = 0.0;
-        }
-      });
+      if (mounted) {
+        setState(() {
+          var value = event.snapshot.value;
+          if (value is num) {
+            livingRoomTemperatureValue = value.toDouble();
+          } else {
+            livingRoomTemperatureValue = 0.0;
+          }
+        });
+      }
     });
 
     /* Cập nhật nhiệt độ và độ ẩm của KitchenRoom */
@@ -184,14 +221,16 @@ class _LightScreenState extends State<LightScreen> {
         .child('kitchenRoom/temperature');
 
     kitChenRoomTemperatureRef.onValue.listen((event) {
-      setState(() {
-        var value = event.snapshot.value;
-        if (value is num) {
-          kitchenRoomTemperatureValue = value.toDouble();
-        } else {
-          kitchenRoomTemperatureValue = 0.0;
-        }
-      });
+      if (mounted) {
+        setState(() {
+          var value = event.snapshot.value;
+          if (value is num) {
+            kitchenRoomTemperatureValue = value.toDouble();
+          } else {
+            kitchenRoomTemperatureValue = 0.0;
+          }
+        });
+      }
     });
 
     /* Cập nhật nhiệt độ và độ ẩm của BedRoom */
@@ -201,14 +240,16 @@ class _LightScreenState extends State<LightScreen> {
         .child('bedRoom/humidity');
 
     bedRoomHumidityRef.onValue.listen((event) {
-      setState(() {
-        var value = event.snapshot.value;
-        if (value is num) {
-          bedRoomHumidityValue = value.toDouble();
-        } else {
-          bedRoomHumidityValue = 0.0;
-        }
-      });
+      if (mounted) {
+        setState(() {
+          var value = event.snapshot.value;
+          if (value is num) {
+            bedRoomHumidityValue = value.toDouble();
+          } else {
+            bedRoomHumidityValue = 0.0;
+          }
+        });
+      }
     });
 
     DatabaseReference bedRoomTemperatureRef = FirebaseDatabase.instance
@@ -217,54 +258,60 @@ class _LightScreenState extends State<LightScreen> {
         .child('bedRoom/temperature');
 
     bedRoomTemperatureRef.onValue.listen((event) {
-      setState(() {
-        var value = event.snapshot.value;
-        if (value is num) {
-          bedRoomTemperatureValue = value.toDouble();
-        } else {
-          bedRoomTemperatureValue = 0.0;
-        }
-      });
+      if (mounted) {
+        setState(() {
+          var value = event.snapshot.value;
+          if (value is num) {
+            bedRoomTemperatureValue = value.toDouble();
+          } else {
+            bedRoomTemperatureValue = 0.0;
+          }
+        });
+      }
     });
   }
 
   void onSwitchChanged(
       bool value, bool isLivingRoom, bool isKitchen, bool isBedRoom) {
-    setState(() {
-      if (isLivingRoom) {
-        livingRoomSwitchValue = value;
-        _saveSwitchState(value, 'livingRoom');
-        _livingRoomFirebaseService.updateSwitchStatus(value);
-      }
-      if (isKitchen) {
-        kitchenRoomSwitchValue = value;
-        _saveSwitchState(value, 'kitchenRoom');
-        _kitchenFirebaseService.updateSwitchStatus(value);
-      }
-      if (isBedRoom) {
-        bedRoomSwitchValue = value;
-        _saveSwitchState(value, 'bedRoom');
-        _bedRoomFirebaseService.updateSwitchStatus(value);
-      }
-    });
+    if (mounted) {
+      setState(() {
+        if (isLivingRoom) {
+          livingRoomSwitchValue = value;
+          _saveSwitchState(value, 'livingRoom');
+          _livingRoomFirebaseService.updateSwitchStatus(value);
+        }
+        if (isKitchen) {
+          kitchenRoomSwitchValue = value;
+          _saveSwitchState(value, 'kitchenRoom');
+          _kitchenFirebaseService.updateSwitchStatus(value);
+        }
+        if (isBedRoom) {
+          bedRoomSwitchValue = value;
+          _saveSwitchState(value, 'bedRoom');
+          _bedRoomFirebaseService.updateSwitchStatus(value);
+        }
+      });
+    }
   }
 
   Future<void> _loadSwitchState(String roomKey) async {
     _prefs = await SharedPreferences.getInstance();
     bool switchValue = _prefs.getBool('$roomKey-switchValue') ?? false;
     double brightnessValue = _prefs.getDouble('$roomKey-brightnessValue') ?? 0;
-    setState(() {
-      if (roomKey == 'livingRoom') {
-        livingRoomSwitchValue = switchValue;
-        livingRoomBrightnessValue = brightnessValue;
-      } else if (roomKey == 'kitchenRoom') {
-        kitchenRoomSwitchValue = switchValue;
-        kitchenRoomBrightnessValue = brightnessValue;
-      } else if (roomKey == 'bedRoom') {
-        bedRoomSwitchValue = switchValue;
-        bedRoomBrightnessValue = brightnessValue;
-      }
-    });
+    if (mounted) {
+      setState(() {
+        if (roomKey == 'livingRoom') {
+          livingRoomSwitchValue = switchValue;
+          livingRoomBrightnessValue = brightnessValue;
+        } else if (roomKey == 'kitchenRoom') {
+          kitchenRoomSwitchValue = switchValue;
+          kitchenRoomBrightnessValue = brightnessValue;
+        } else if (roomKey == 'bedRoom') {
+          bedRoomSwitchValue = switchValue;
+          bedRoomBrightnessValue = brightnessValue;
+        }
+      });
+    }
   }
 
   Future<void> _saveSwitchState(bool value, String roomKey) async {
@@ -275,15 +322,17 @@ class _LightScreenState extends State<LightScreen> {
   Future<void> _loadBrightnessValue(String roomKey) async {
     _prefs = await SharedPreferences.getInstance();
     double brightnessValue = _prefs.getDouble('$roomKey-brightnessValue') ?? 0;
-    setState(() {
-      if (roomKey == 'livingRoom') {
-        livingRoomBrightnessValue = brightnessValue;
-      } else if (roomKey == 'kitchenRoom') {
-        kitchenRoomBrightnessValue = brightnessValue;
-      } else if (roomKey == 'bedRoom') {
-        bedRoomBrightnessValue = brightnessValue;
-      }
-    });
+    if (mounted) {
+      setState(() {
+        if (roomKey == 'livingRoom') {
+          livingRoomBrightnessValue = brightnessValue;
+        } else if (roomKey == 'kitchenRoom') {
+          kitchenRoomBrightnessValue = brightnessValue;
+        } else if (roomKey == 'bedRoom') {
+          bedRoomBrightnessValue = brightnessValue;
+        }
+      });
+    }
   }
 
   Future<void> _saveBrightnessValue(double value, String roomKey) async {
@@ -337,38 +386,44 @@ class _LightScreenState extends State<LightScreen> {
   }
 
   void incrementTime() {
-    setState(() {
-      if (selectedTime < 30) {
-        selectedTime += 1;
-        _saveSelectedTime();
+    if (mounted) {
+      setState(() {
+        if (selectedTime < 30) {
+          selectedTime += 1;
+          _saveSelectedTime();
 
-        _updateAlarmLedData(
-            selectedTime, int.parse(selectedValue.replaceAll('mls', '')));
-      }
-    });
+          _updateAlarmLedData(
+              selectedTime, int.parse(selectedValue.replaceAll('mls', '')));
+        }
+      });
+    }
   }
 
   void decrementTime() {
-    setState(() {
-      if (selectedTime > 5) {
-        selectedTime -= 1;
-        _saveSelectedTime();
+    if (mounted) {
+      setState(() {
+        if (selectedTime > 5) {
+          selectedTime -= 1;
+          _saveSelectedTime();
 
-        _updateAlarmLedData(
-            selectedTime, int.parse(selectedValue.replaceAll('mls', '')));
-      }
-    });
+          _updateAlarmLedData(
+              selectedTime, int.parse(selectedValue.replaceAll('mls', '')));
+        }
+      });
+    }
   }
 
   void onValueChange(String? value) {
     if (value != null) {
-      setState(() {
-        selectedValue = value;
-        _saveSelectedValue();
+      if (mounted) {
+        setState(() {
+          selectedValue = value;
+          _saveSelectedValue();
 
-        _updateAlarmLedData(
-            selectedTime, int.parse(value.replaceAll('mls', '')));
-      });
+          _updateAlarmLedData(
+              selectedTime, int.parse(value.replaceAll('mls', '')));
+        });
+      }
     }
   }
 
@@ -379,10 +434,6 @@ class _LightScreenState extends State<LightScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-              child: CircleAvatar(backgroundImage: AssetImage("images/h1.png")),
-            ),
             TweenAnimationBuilder(
               tween: Tween<double>(begin: 0, end: 1),
               duration: const Duration(seconds: 1),
@@ -414,10 +465,12 @@ class _LightScreenState extends State<LightScreen> {
               return LivingControlWidget(
                 brightnessValue: livingRoomBrightnessValue,
                 onBrightnessChanged: (value) async {
-                  setState(() {
-                    livingRoomBrightnessValue = value;
-                    _saveBrightnessValue(value, 'livingRoom');
-                  });
+                  if (mounted) {
+                    setState(() {
+                      livingRoomBrightnessValue = value;
+                      _saveBrightnessValue(value, 'livingRoom');
+                    });
+                  }
                   await _updateBrightness(
                       _livingRoomFirebaseService, livingRoomBrightnessValue);
                 },
@@ -432,10 +485,12 @@ class _LightScreenState extends State<LightScreen> {
               return KitchenControlWidget(
                 brightnessValue: kitchenRoomBrightnessValue,
                 onBrightnessChanged: (value) async {
-                  setState(() {
-                    kitchenRoomBrightnessValue = value;
-                    _saveBrightnessValue(value, 'kitchenRoom');
-                  });
+                  if (mounted) {
+                    setState(() {
+                      kitchenRoomBrightnessValue = value;
+                      _saveBrightnessValue(value, 'kitchenRoom');
+                    });
+                  }
                   await _updateBrightness(
                       _kitchenFirebaseService, kitchenRoomBrightnessValue);
                 },
@@ -450,10 +505,12 @@ class _LightScreenState extends State<LightScreen> {
               return BedRoomControlWidget(
                 brightnessValue: bedRoomBrightnessValue,
                 onBrightnessChanged: (value) async {
-                  setState(() {
-                    bedRoomBrightnessValue = value;
-                    _saveBrightnessValue(value, 'bedRoom');
-                  });
+                  if (mounted) {
+                    setState(() {
+                      bedRoomBrightnessValue = value;
+                      _saveBrightnessValue(value, 'bedRoom');
+                    });
+                  }
                   await _updateBrightness(
                       _bedRoomFirebaseService, bedRoomBrightnessValue);
                 },
@@ -464,10 +521,12 @@ class _LightScreenState extends State<LightScreen> {
                 },
                 switchValue: bedRoomSwitchValue,
               );
+
             case 3:
               return AlarmControlWidget(
                 selectedTime: selectedTime,
                 selectedValue: selectedValue,
+                alarmLedTimeValue: alarmLedTimeValue,
                 incrementTime: incrementTime,
                 decrementTime: decrementTime,
                 onValueChange: onValueChange,

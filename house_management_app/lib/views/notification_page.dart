@@ -21,6 +21,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       appBar: AppBar(
         title: Text("Notifications"),
         centerTitle: true,
+        backgroundColor: const Color.fromRGBO(58, 126, 111, 1),
       ),
       body: Padding(
         padding: EdgeInsets.fromLTRB(10, 5, 10, 0),
